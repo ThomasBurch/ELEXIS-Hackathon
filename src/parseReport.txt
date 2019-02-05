@@ -1,0 +1,159 @@
+
+#######  tei:entry 
+[{'_count': 7543, 'parent': [{'_count': 7543, '_tag': 'div'}]}]
+entry without lemma form: 535
+
+#######  tei:form  attr -- type ; 
+[ {'_count': 7008, '_type': 'lemma', 'parent': [{'_count': 7008, '_tag': 'entry'}]},
+  {'_count': 1866, '_type': 'variant', 'parent': [{'_count': 54, '_tag': 'entry'}, {'_count': 1811, '_tag': 'form'}, {'_count': 1, '_tag': 'sense'}]},
+  {'_count': 7554, '_type': 'inflected', 'parent': [{'_count': 7552, '_tag': 'entry'}, {'_count': 2, '_tag': 'form'}]},
+  {'_count': 534, '_type': 'multiWordUnit', 'parent': [{'_count': 534, '_tag': 'entry'}]},
+  {'_count': 53, '_type': 'construction', 'parent': [{'_count': 53, '_tag': 'sense'}]},
+  {'_count': 1, '_type': 'mutliWordUnit', 'parent': [{'_count': 1, '_tag': 'entry'}]}]
+
+#######  tei:gram  attr -- type ; 
+[ {'_count': 7019, '_type': 'pos', 'parent': [{'_count': 7019, '_tag': 'gramGrp'}]},
+  {'_count': 7458, '_type': 'root', 'parent': [{'_count': 7457, '_tag': 'gramGrp'}, {'_count': 1, '_tag': 'form'}]},
+  {'_count': 65, '_type': 'gender', 'parent': [{'_count': 65, '_tag': 'gramGrp'}]},
+  {'_count': 1780, '_type': 'subc', 'parent': [{'_count': 1780, '_tag': 'gramGrp'}]},
+  {'_count': 93, '_type': 'usg', 'parent': [{'_count': 93, '_tag': 'gramGrp'}]},
+  {'_count': 143, '_type': 'arguments', 'parent': [{'_count': 143, '_tag': 'gramGrp'}]},
+  {'_count': 47, '_type': 'morphType', 'parent': [{'_count': 47, '_tag': 'gramGrp'}]},
+  {'_count': 61, '_type': 'morph', 'parent': [{'_count': 61, '_tag': 'gramGrp'}]},
+  {'_count': 1, '_type': '', 'parent': [{'_count': 1, '_tag': 'gramGrp'}]},
+  {'_count': 7, '_type': 'number', 'parent': [{'_count': 7, '_tag': 'gramGrp'}]}]
+
+#######  tei:gram[@type="pos"]  attr -- type ;  content ; 
+[ { '_count': 7019,
+    '_type': 'pos',
+    'content': [ {'_count': 105, '_text': 'adverb'},
+                 {'_count': 3978, '_text': 'noun'},
+                 {'_count': 20, '_text': 'properNoun'},
+                 {'_count': 349, '_text': 'adjective'},
+                 {'_count': 7, '_text': 'personalPronoun'},
+                 {'_count': 1544, '_text': 'verb'},
+                 {'_count': 73, '_text': 'toponym'},
+                 {'_count': 52, '_text': 'pluralNoun'},
+                 {'_count': 20, '_text': 'interjection'},
+                 {'_count': 29, '_text': 'particle'},
+                 {'_count': 153, '_text': 'activeParticiple'},
+                 {'_count': 205, '_text': 'collectiveNoun'},
+                 {'_count': 3, '_text': None},
+                 {'_count': 30, '_text': 'preposition'},
+                 {'_count': 34, '_text': 'conjunction'},
+                 {'_count': 18, '_text': 'interrogative'},
+                 {'_count': 208, '_text': 'participle'},
+                 {'_count': 87, '_text': 'passiveParticiple'},
+                 {'_count': 1, '_text': 'vocativeParticle'},
+                 {'_count': 8, '_text': 'demonstrativePronoun'},
+                 {'_count': 3, '_text': 'responseParticle'},
+                 {'_count': 34, '_text': 'numeral'},
+                 {'_count': 4, '_text': 'relativePronoun'},
+                 {'_count': 2, '_text': 'elative'},
+                 {'_count': 12, '_text': 'indefinite'},
+                 {'_count': 1, '_text': 'definiteArticle'},
+                 {'_count': 12, '_text': 'ordinal'},
+                 {'_count': 2, '_text': 'dualNoun'},
+                 {'_count': 1, '_text': 'pluralDemonstrative'},
+                 {'_count': 2, '_text': 'reflexivePronoun'},
+                 {'_count': 1, '_text': 'pronoun'},
+                 {'_count': 14, '_text': 'pronominalSuffix'},
+                 {'_count': 7, '_text': 'negatedPersonalPronoun'}],
+    'parent': [{'_count': 7019, '_tag': 'gramGrp'}]}]
+
+#######  tei:ptr  attr -- type ; 
+[{'_count': 423, '_type': 'example', 'parent': [{'_count': 419, '_tag': 'sense'}, {'_count': 4, '_tag': 'cit'}]}]
+
+#######  tei:div[@type="entries"]//tei:cit  attr -- type ; 
+[ {'_count': 35004, '_type': 'translation', 'parent': [{'_count': 35002, '_tag': 'sense'}, {'_count': 2, '_tag': 'entry'}]},
+  {'_count': 107, '_type': 'literalTranslation', 'parent': [{'_count': 107, '_tag': 'sense'}]}]
+
+#######  tei:div[@type="entries"]//tei:cit  attr -- lang ; 
+[ { '_count': 11588,
+    '_{http://www.w3.org/XML/1998/namespace}lang': 'en',
+    'parent': [{'_count': 11587, '_tag': 'sense'}, {'_count': 1, '_tag': 'entry'}]},
+  {'_count': 14051, '_{http://www.w3.org/XML/1998/namespace}lang': 'de', 'parent': [{'_count': 14051, '_tag': 'sense'}]},
+  { '_count': 9469,
+    '_{http://www.w3.org/XML/1998/namespace}lang': 'fr',
+    'parent': [{'_count': 9468, '_tag': 'sense'}, {'_count': 1, '_tag': 'entry'}]},
+  {'_count': 1, '_{http://www.w3.org/XML/1998/namespace}lang': 'dfr', 'parent': [{'_count': 1, '_tag': 'sense'}]},
+  {'_count': 1, '_{http://www.w3.org/XML/1998/namespace}lang': 'er', 'parent': [{'_count': 1, '_tag': 'sense'}]},
+  {'_count': 1, '_{http://www.w3.org/XML/1998/namespace}lang': 'f', 'parent': [{'_count': 1, '_tag': 'sense'}]}]
+
+#######  tei:div[@type="examples"]//tei:cit  attr -- type ; 
+[ {'_count': 355, '_type': 'example', 'parent': [{'_count': 355, '_tag': 'div'}]},
+  {'_count': 1005, '_type': 'translation', 'parent': [{'_count': 1002, '_tag': 'cit'}, {'_count': 3, '_tag': 'sense'}]},
+  {'_count': 22, '_type': 'literalTranslation', 'parent': [{'_count': 22, '_tag': 'cit'}]}]
+
+#######  tei:div[@type="examples"]//tei:cit  attr -- lang ; 
+[ {'_count': 355, '_{http://www.w3.org/XML/1998/namespace}lang': '', 'parent': [{'_count': 355, '_tag': 'div'}]},
+  {'_count': 360, '_{http://www.w3.org/XML/1998/namespace}lang': 'en', 'parent': [{'_count': 359, '_tag': 'cit'}, {'_count': 1, '_tag': 'sense'}]},
+  {'_count': 463, '_{http://www.w3.org/XML/1998/namespace}lang': 'de', 'parent': [{'_count': 462, '_tag': 'cit'}, {'_count': 1, '_tag': 'sense'}]},
+  {'_count': 204, '_{http://www.w3.org/XML/1998/namespace}lang': 'fr', 'parent': [{'_count': 203, '_tag': 'cit'}, {'_count': 1, '_tag': 'sense'}]}]
+
+#######  tei:fs  attr -- type ; 
+[ {'_count': 36083, '_type': 'change', 'parent': [{'_count': 34884, '_tag': 'entry'}, {'_count': 1199, '_tag': 'cit'}]},
+  {'_count': 5732, '_type': 'create', 'parent': [{'_count': 5378, '_tag': 'entry'}, {'_count': 354, '_tag': 'cit'}]}]
+
+#######  tei:f  attr -- name ; 
+[ {'_count': 41815, '_name': 'who', 'parent': [{'_count': 41815, '_tag': 'fs'}]},
+  {'_count': 41815, '_name': 'when', 'parent': [{'_count': 41815, '_tag': 'fs'}]},
+  {'_count': 16000, '_name': 'status', 'parent': [{'_count': 16000, '_tag': 'fs'}]}]
+
+#######  tei:f[@name="who"]/tei:symbol  attr -- value ; 
+[ {'_count': 7262, '_value': 'inesg', 'parent': [{'_count': 7262, '_tag': 'f'}]},
+  {'_count': 20875, '_value': 'inesd', 'parent': [{'_count': 20875, '_tag': 'f'}]},
+  {'_count': 8992, '_value': 'stephan', 'parent': [{'_count': 8992, '_tag': 'f'}]},
+  {'_count': 189, '_value': 'charly', 'parent': [{'_count': 189, '_tag': 'f'}]},
+  {'_count': 2113, '_value': 'bettina', 'parent': [{'_count': 2113, '_tag': 'f'}]},
+  {'_count': 929, '_value': 'gisela', 'parent': [{'_count': 929, '_tag': 'f'}]},
+  {'_count': 606, '_value': 'ines2', 'parent': [{'_count': 606, '_tag': 'f'}]},
+  {'_count': 278, '_value': 'omar1', 'parent': [{'_count': 278, '_tag': 'f'}]},
+  {'_count': 570, '_value': 'veronika', 'parent': [{'_count': 570, '_tag': 'f'}]},
+  {'_count': 1, '_value': 'ines1', 'parent': [{'_count': 1, '_tag': 'f'}]}]
+
+TOKEN and TYPE in entries:
+
+#######  arabic in entries -- tei:div[@type="entries"]//tei:form//tei:orth 
+type count: 15393; token count: 19954
+
+#######  arabic in lemma -- tei:div[@type="entries"]//tei:form[@type="lemma"]/tei:orth 
+type count: 6645; token count: 7022
+
+#######  arabic in variant -- tei:div[@type="entries"]//tei:form[@type="variant"]/tei:orth 
+type count: 1859; token count: 2025
+
+#######  arabic in inflected -- tei:div[@type="entries"]//tei:form[@type="inflected"]/tei:orth 
+type count: 7043; token count: 7733
+
+#######  arabic in multiWordUnit -- tei:div[@type="entries"]//tei:form[@type="multiWordUnit"]/tei:orth 
+type count: 651; token count: 966
+
+#######  arabic in construction -- tei:div[@type="entries"]//tei:form[@type="construction"]/tei:orth 
+type count: 41; token count: 201
+
+#######  arabic in mutliWordUnit -- tei:div[@type="entries"]//tei:form[@type="mutliWordUnit"]/tei:orth 
+type count: 2; token count: 2
+
+#######  en -- tei:div[@type="entries"]//tei:cit[@xml:lang="en"]/tei:quote 
+type count: 6814; token count: 21742
+
+#######  de -- tei:div[@type="entries"]//tei:cit[@xml:lang="de"]/tei:quote 
+type count: 11799; token count: 24155
+
+#######  fr -- tei:div[@type="entries"]//tei:cit[@xml:lang="fr"]/tei:quote 
+type count: 6785; token count: 16389
+
+TOKEN and TYPE in examples:
+
+#######  arabic -- tei:div[@type="examples"]//tei:cit[@type="example"]/tei:quote 
+type count: 919; token count: 1339
+
+#######  en -- tei:div[@type="examples"]//tei:cit[@xml:lang="en"]/tei:quote 
+type count: 557; token count: 1496
+
+#######  de -- tei:div[@type="examples"]//tei:cit[@xml:lang="de"]/tei:quote 
+type count: 1034; token count: 2565
+
+#######  fr -- tei:div[@type="examples"]//tei:cit[@xml:lang="fr"]/tei:quote 
+type count: 514; token count: 1105
