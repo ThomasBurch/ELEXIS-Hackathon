@@ -109,32 +109,93 @@ def elem_analysis(elemname, attr=None, content=False):
   return res
 
 ### entry
-pp.pprint(elem_analysis('tei:entry'))
-entry_no_lemma = []
-for entry in root.findall('.//tei:entry', ns):
-  r = entry.findall('tei:form[@type="lemma"]', ns)
-  if len(r) < 1:
-    entry_no_lemma.append({'id': entry.attrib['{%s}%s' % (ns['xml'], 'id')]})
-print('entry without lemma form: ' + str(len(entry_no_lemma)))
-# pp.pprint(entry_no_lemma)
-pp.pprint(elem_analysis('tei:form', attr={'ns': '', 'attr': 'type'}))
-# pp.pprint(elem_analysis('tei:orth', attr={'ns': 'xml', 'attr': 'lang'}))
-# pp.pprint(elem_analysis('tei:gramGrp'))
-pp.pprint(elem_analysis('tei:gram', attr={'ns': '', 'attr': 'type'}))
-pp.pprint(elem_analysis('tei:gram[@type="pos"]', attr={'ns': '', 'attr': 'type'}, content=True))
-# pp.pprint(elem_analysis('tei:sense', attr={'ns': '', 'attr': 'type'}))
-pp.pprint(elem_analysis('tei:ptr', attr={'ns': '', 'attr': 'type'}))
+# pp.pprint(elem_analysis('tei:entry'))
+# entry_no_lemma = []
+# for entry in root.findall('.//tei:entry', ns):
+#   r = entry.findall('tei:form[@type="lemma"]', ns)
+#   if len(r) < 1:
+#     entry_no_lemma.append({'id': entry.attrib['{%s}%s' % (ns['xml'], 'id')]})
+# print('entry without lemma form: ' + str(len(entry_no_lemma)))
+# # pp.pprint(entry_no_lemma)
+# pp.pprint(elem_analysis('tei:form', attr={'ns': '', 'attr': 'type'}))
+# # pp.pprint(elem_analysis('tei:orth', attr={'ns': 'xml', 'attr': 'lang'}))
+# # pp.pprint(elem_analysis('tei:gramGrp'))
+# pp.pprint(elem_analysis('tei:gram', attr={'ns': '', 'attr': 'type'}))
+# pp.pprint(elem_analysis('tei:gram[@type="pos"]', attr={'ns': '', 'attr': 'type'}, content=True))
+# # pp.pprint(elem_analysis('tei:sense', attr={'ns': '', 'attr': 'type'}))
+# pp.pprint(elem_analysis('tei:ptr', attr={'ns': '', 'attr': 'type'}))
 
-# pp.pprint(elem_analysis('tei:cit', attr={'ns': '', 'attr': 'type'}))
-pp.pprint(elem_analysis('tei:div[@type="entries"]//tei:cit', attr={'ns': '', 'attr': 'type'}))
-pp.pprint(elem_analysis('tei:div[@type="entries"]//tei:cit', attr={'ns': 'xml', 'attr': 'lang'}))
-pp.pprint(elem_analysis('tei:div[@type="examples"]//tei:cit', attr={'ns': '', 'attr': 'type'}))
-pp.pprint(elem_analysis('tei:div[@type="examples"]//tei:cit', attr={'ns': 'xml', 'attr': 'lang'}))
+# # pp.pprint(elem_analysis('tei:cit', attr={'ns': '', 'attr': 'type'}))
+# pp.pprint(elem_analysis('tei:div[@type="entries"]//tei:cit', attr={'ns': '', 'attr': 'type'}))
+# pp.pprint(elem_analysis('tei:div[@type="entries"]//tei:cit', attr={'ns': 'xml', 'attr': 'lang'}))
+# pp.pprint(elem_analysis('tei:div[@type="examples"]//tei:cit', attr={'ns': '', 'attr': 'type'}))
+# pp.pprint(elem_analysis('tei:div[@type="examples"]//tei:cit', attr={'ns': 'xml', 'attr': 'lang'}))
 
-pp.pprint(elem_analysis('tei:fs', attr={'ns': '', 'attr': 'type'}))
-pp.pprint(elem_analysis('tei:f', attr={'ns': '', 'attr': 'name'}))
-pp.pprint(elem_analysis('tei:f[@name="who"]/tei:symbol', attr={'ns': '', 'attr': 'value'}))
-# pp.pprint(elem_analysis('tei:form[@type="lemma"]/tei:orth', attr={'ns': '', 'attr': 'nothis'}, content=True))
+# pp.pprint(elem_analysis('tei:fs', attr={'ns': '', 'attr': 'type'}))
+# pp.pprint(elem_analysis('tei:f', attr={'ns': '', 'attr': 'name'}))
+# pp.pprint(elem_analysis('tei:f[@name="who"]/tei:symbol', attr={'ns': '', 'attr': 'value'}))
+
+
+## entries: -- 7543
+# //tei:div[@type="entries"]/tei:entry
+
+## entries, which includes fr, en and de -- 6055
+# //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) > 0]
+
+## entries, which includes de -- 7541
+# //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="de"]) > 0 ]
+## entries, which includes fr -- 6062
+# //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="fr"]) > 0 ]
+## entries, which includes en -- 7190
+# //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="en"]) > 0 ]
+
+## entries, which includes de, en but not fr -- 1133
+# //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
+## entries, which includes de, fr but not en -- 6
+# //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0]
+## entries, which includes fr, en but not de -- 1
+# //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) = 0]
+
+## entries, which includes only fr -- 0
+# //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="de"]) = 0]
+## entries, which includes only de -- 347
+# //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
+## entries, which includes only en -- 1
+# //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
+
+## entries, which includes no translation -- 0
+# //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="de"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
+
+####
+## examples: -- 355
+# //tei:div[@type="examples"]/tei:cit
+
+## examples, which includes fr, en and de -- 175
+# //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) > 0]
+
+## examples, which includes de -- 355
+# //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="de"]) > 0]
+## examples, which includes en -- 316
+# //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="en"]) > 0]
+## examples, which includes fr -- 175
+# //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="fr"]) > 0]
+
+## examples, which includes de, en but not fr -- 141
+# //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
+## examples, which includes de, fr but not en -- 0
+# //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0]
+## examples, which includes fr, en but not de -- 0
+# //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) = 0]
+
+## examples, which includes only fr -- 0
+# //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="de"]) = 0]
+## examples, which includes only de -- 39
+# //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
+## examples, which includes only en -- 0
+# //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
+
+## examples, which includes no translation -- 0
+# //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="de"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
 
 ### words count
 def word_analysis(elemname, lang):
@@ -164,25 +225,25 @@ def word_analysis(elemname, lang):
     # break
   return res_index, token_count
 
-print()
-print('TOKEN and TYPE in entries:')
-type_index, token_count = word_analysis('tei:div[@type="entries"]//tei:form//tei:orth', 'arabic in entries')
-print('type count: ' + str(len(type_index)) + '; token count: ' + str(token_count))
-for l in ['lemma', 'variant', 'inflected', 'multiWordUnit', 'construction', 'mutliWordUnit']:
-  type_index, token_count = word_analysis('tei:div[@type="entries"]//tei:form[@type="' + l + '"]/tei:orth', 'arabic in ' + l)
-  print('type count: ' + str(len(type_index)) + '; token count: ' + str(token_count))
-for l in ['en', 'de', 'fr']:
-  type_index, token_count = word_analysis('tei:div[@type="entries"]//tei:cit[@xml:lang="' + l + '"]/tei:quote', l)
-  print('type count: ' + str(len(type_index)) + '; token count: ' + str(token_count))
-# pp.pprint(type_index)
-print()
-print('TOKEN and TYPE in examples:')
-type_index, token_count = word_analysis('tei:div[@type="examples"]//tei:cit[@type="example"]/tei:quote', 'arabic')
-print('type count: ' + str(len(type_index)) + '; token count: ' + str(token_count))
-for l in ['en', 'de', 'fr']:
-  type_index, token_count = word_analysis('tei:div[@type="examples"]//tei:cit[@xml:lang="' + l + '"]/tei:quote', l)
-  print('type count: ' + str(len(type_index)) + '; token count: ' + str(token_count))
-# pp.pprint(type_index)
+# print()
+# print('TOKEN and TYPE in entries:')
+# type_index, token_count = word_analysis('tei:div[@type="entries"]//tei:form//tei:orth', 'arabic in entries')
+# print('type count: ' + str(len(type_index)) + '; token count: ' + str(token_count))
+# for l in ['lemma', 'variant', 'inflected', 'multiWordUnit', 'construction', 'mutliWordUnit']:
+#   type_index, token_count = word_analysis('tei:div[@type="entries"]//tei:form[@type="' + l + '"]/tei:orth', 'arabic in ' + l)
+#   print('type count: ' + str(len(type_index)) + '; token count: ' + str(token_count))
+# for l in ['en', 'de', 'fr']:
+#   type_index, token_count = word_analysis('tei:div[@type="entries"]//tei:cit[@xml:lang="' + l + '"]/tei:quote', l)
+#   print('type count: ' + str(len(type_index)) + '; token count: ' + str(token_count))
+# # pp.pprint(type_index)
+# print()
+# print('TOKEN and TYPE in examples:')
+# type_index, token_count = word_analysis('tei:div[@type="examples"]//tei:cit[@type="example"]/tei:quote', 'arabic')
+# print('type count: ' + str(len(type_index)) + '; token count: ' + str(token_count))
+# for l in ['en', 'de', 'fr']:
+#   type_index, token_count = word_analysis('tei:div[@type="examples"]//tei:cit[@xml:lang="' + l + '"]/tei:quote', l)
+#   print('type count: ' + str(len(type_index)) + '; token count: ' + str(token_count))
+# # pp.pprint(type_index)
 
 
 
