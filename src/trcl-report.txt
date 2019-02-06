@@ -28416,3 +28416,29 @@ de count	number of texts	first 5 texts
 2	1209	'(Fleisch-', '(Geld) ausgeben', '(ein)mal...(ein)mal', '(ein)mal...dann', '(herum)trödeln'
 1	10358	'"Bechern"', '"Berg"', '"Touristenbiene"', '"Zwiesel"', '"g'schamig"'
 
+en count	number of texts	first 5 texts
+771	1	'-'
+72	1	''
+12	1	'then'
+9	1	'European'
+7	2	'Christian', 'mischief'
+6	11	'Moroccan', 'about', 'almost', 'bad', 'crazy'
+5	26	'afterwards', 'back then', 'below', 'beside', 'company'
+4	86	'American', 'Egyptian', 'appearance', 'appointment', 'approximately'
+3	263	'Algerian', 'European (f)', 'Spanish', 'Turkish fez', 'advantage'
+2	1023	'(from) behind', '(not) anybody', '12 a.m.; noon', 'American (f)', 'April'
+1	7335	' to convert to Islam', '( a pair of) shoes', '(I am) fine', '(Modern) Standard Arabic', '(That's) enough!'
+
+fr count	number of texts	first 5 texts
+33	1	''
+14	1	'-'
+10	1	'étranger'
+9	1	'idiot'
+7	1	'derrière'
+6	12	'après', 'chrétien', 'fin', 'fou', 'honte'
+5	13	'aimer', 'appeler', 'bon', 'ce', 'cette'
+4	77	'Européenne', 'approximativement', 'association', 'autrefois', 'baisser'
+3	213	'Européen', 'Marocain', 'affaire', 'alors', 'amour'
+2	897	'12:00 (en jour); midi', 'Algérien', 'Américain', 'Américaine', 'Berbère'
+1	6518	' un litre d'huile', '(C’est) assez!', '(Il s'est passé) Ce que Dieu a voulu!', '(Le) Seigneur; Dieu; idole', '(autrefois:) ministre de l'Intérieur'
+

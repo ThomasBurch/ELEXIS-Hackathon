@@ -64,21 +64,21 @@ def build_inverted_list(root, lang):
       else: 
         # quote_text = quote_text.lower()
         pass
-      if quote_text in res_dict.keys():
+      if trans_id in res_dict.keys():
         found_entry_id = False
-        for entryitem in res_dict[quote_text]['entry_list']:
+        for entryitem in res_dict[trans_id]['entry_list']:
           if entry_id == entryitem['entry_id']:
             entryitem['count'] += 1
             found_entry_id = True
         if found_entry_id == False:
-          res_dict[quote_text]['entry_list'].append({'entry_id': entry_id, 'count': 1})
+          res_dict[trans_id]['entry_list'].append({'entry_id': entry_id, 'count': 1})
       else: 
-        res_dict[quote_text] = {'entry_list': [{'entry_id': entry_id, 'count': 1}]}
+        res_dict[trans_id] = {'entry_list': [{'entry_id': entry_id, 'count': 1}]}
     # break
   for key in res_dict.keys():
     count = sum([item['count'] for item in res_dict[key]['entry_list']])
     res_dict[key]['count'] = count
-    res_list.append({'text': key, 'count': count, 'entry_list': res_dict[key]['entry_list']})
+    res_list.append({'id': key, 'text': text_dict[key], 'count': count, 'entry_list': res_dict[key]['entry_list']})
   res_list = sorted(res_list, key = lambda item: item['count'], reverse=True)
   return res_dict, res_list
 
@@ -105,10 +105,9 @@ for l in ['de', 'en', 'fr']:
   for item in cal_list:
     out += str(item[0]) + '\t' + str(item[1]) + '\t' + item[2] + '\n'
   print(out)
-  break
-  # pp.pprint(res_list)
-#   with open(os.path.join(os.getcwd(), 'data', l + '_list.json'), 'w', encoding='utf8') as f:
-#     data = json.dumps(res_list, indent=2, ensure_ascii=False)
-#     f.write(data)
+  # break
+  with open(os.path.join(os.getcwd(), 'data', l + '_list.json'), 'w', encoding='utf8') as f:
+    data = json.dumps(res_list, indent=2, ensure_ascii=False)
+    f.write(data)
 
 
