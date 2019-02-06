@@ -139,62 +139,62 @@ def elem_analysis(elemname, attr=None, content=False):
 ## entries: -- 7543
 # //tei:div[@type="entries"]/tei:entry
 
-## entries, which includes fr, en and de -- 6055
+## entries, which include fr, en and de -- 6055
 # //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) > 0]
 
-## entries, which includes de -- 7541
+## entries, which include de -- 7541
 # //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="de"]) > 0 ]
-## entries, which includes fr -- 6062
+## entries, which include fr -- 6062
 # //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="fr"]) > 0 ]
-## entries, which includes en -- 7190
+## entries, which include en -- 7190
 # //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="en"]) > 0 ]
 
-## entries, which includes de, en but not fr -- 1133
+## entries, which include de, en but not fr -- 1133
 # //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
-## entries, which includes de, fr but not en -- 6
+## entries, which include de, fr but not en -- 6
 # //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0]
-## entries, which includes fr, en but not de -- 1
+## entries, which include fr, en but not de -- 1
 # //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) = 0]
 
-## entries, which includes only fr -- 0
+## entries, which include only fr -- 0
 # //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="de"]) = 0]
-## entries, which includes only de -- 347
+## entries, which include only de -- 347
 # //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
-## entries, which includes only en -- 1
+## entries, which include only en -- 1
 # //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
 
-## entries, which includes no translation -- 0
+## entries, which include no translation -- 0
 # //tei:div[@type="entries"]/tei:entry[count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="de"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
 
 ####
 ## examples: -- 355
 # //tei:div[@type="examples"]/tei:cit
 
-## examples, which includes fr, en and de -- 175
+## examples, which include fr, en and de -- 175
 # //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) > 0]
 
-## examples, which includes de -- 355
+## examples, which include de -- 355
 # //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="de"]) > 0]
-## examples, which includes en -- 316
+## examples, which include en -- 316
 # //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="en"]) > 0]
-## examples, which includes fr -- 175
+## examples, which include fr -- 175
 # //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="fr"]) > 0]
 
-## examples, which includes de, en but not fr -- 141
+## examples, which include de, en but not fr -- 141
 # //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
-## examples, which includes de, fr but not en -- 0
+## examples, which include de, fr but not en -- 0
 # //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0]
-## examples, which includes fr, en but not de -- 0
+## examples, which include fr, en but not de -- 0
 # //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) = 0]
 
-## examples, which includes only fr -- 0
+## examples, which include only fr -- 0
 # //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="fr"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="de"]) = 0]
-## examples, which includes only de -- 39
+## examples, which include only de -- 39
 # //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="de"]) > 0 and count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
-## examples, which includes only en -- 0
+## examples, which include only en -- 0
 # //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="en"]) > 0 and count(.//tei:cit[@xml:lang="de"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
 
-## examples, which includes no translation -- 0
+## examples, which include no translation -- 0
 # //tei:div[@type="examples"]/tei:cit[count(.//tei:cit[@xml:lang="en"]) = 0 and count(.//tei:cit[@xml:lang="de"]) = 0 and count(.//tei:cit[@xml:lang="fr"]) = 0]
 
 ### words count
