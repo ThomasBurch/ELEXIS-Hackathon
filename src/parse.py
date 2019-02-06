@@ -135,6 +135,8 @@ def elem_analysis(elemname, attr=None, content=False):
 # pp.pprint(elem_analysis('tei:f', attr={'ns': '', 'attr': 'name'}))
 # pp.pprint(elem_analysis('tei:f[@name="who"]/tei:symbol', attr={'ns': '', 'attr': 'value'}))
 
+# pp.pprint(elem_analysis('tei:bibl[@type="tunisCourse"]', attr={'ns': '', 'attr': 'type'}, content=True))
+
 
 ## entries: -- 7543
 # //tei:div[@type="entries"]/tei:entry
