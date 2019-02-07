@@ -47,15 +47,27 @@ add_id_to_translations_in_entries(root, 'en')
 add_id_to_translations_in_entries(root, 'fr')
 pp.pprint(text_id_lang_dict)
 
-def build_inverted_list(root, lang):
+def build_inverted_list(root, lang, sibling_langs):
   entry_elems = root.findall('.//tei:div[@type="entries"]/tei:entry', ns)
   res_dict = {}
   res_list = []
   text_dict = text_id_lang_dict[lang]
   for entry in entry_elems:
     entry_id = entry.attrib[xml_id_key]
+    lemma_form = entry.find('./tei:form[@type="lemma"]/tei:orth', ns)
+    lemma_form_text = None if lemma_form == None else lemma_form.text
+    entry_text = None if lemma_form_text == None else lemma_form_text
     trans_elems = entry.findall('.//tei:sense/tei:cit[@xml:lang="%s"]' % (lang), ns)
     for trans in trans_elems:
+      # find ids of siblings
+      sibling_elems = []
+      sibling_ids = []
+      trans_parent = parentmap[trans]
+      for sl in sibling_langs:
+        sibling_elems += trans_parent.findall('./tei:cit[@xml:lang="%s"]' % (sl), ns)
+      for se in sibling_elems:
+        sibling_ids.append(se.attrib[xml_id_key])
+      # find id of trans cit
       trans_type = trans.attrib['type']
       trans_id = trans.attrib[xml_id_key]
       quote_text = text_dict[trans_id]
@@ -69,11 +81,22 @@ def build_inverted_list(root, lang):
         for entryitem in res_dict[trans_id]['entry_list']:
           if entry_id == entryitem['entry_id']:
             entryitem['count'] += 1
+            entryitem['connection_info'].append({'sibling_ids': sibling_ids})
             found_entry_id = True
         if found_entry_id == False:
-          res_dict[trans_id]['entry_list'].append({'entry_id': entry_id, 'count': 1})
+          res_dict[trans_id]['entry_list'].append({
+            'entry_id': entry_id, 
+            'text': entry_text, 
+            'count': 1, 
+            'connection_info': [{'sibling_ids': sibling_ids}]
+          })
       else: 
-        res_dict[trans_id] = {'entry_list': [{'entry_id': entry_id, 'count': 1}]}
+        res_dict[trans_id] = {'entry_list': [{
+          'entry_id': entry_id, 
+          'text': entry_text, 
+          'count': 1, 
+          'connection_info': [{'sibling_ids': sibling_ids}]
+        }]}
     # break
   for key in res_dict.keys():
     count = sum([item['count'] for item in res_dict[key]['entry_list']])
@@ -82,8 +105,13 @@ def build_inverted_list(root, lang):
   res_list = sorted(res_list, key = lambda item: item['count'], reverse=True)
   return res_dict, res_list
 
-for l in ['de', 'en', 'fr']:
-  res_dict, res_list = build_inverted_list(root, l)
+langs = ['de', 'en', 'fr']
+for l in langs:
+  sibling_langs = []
+  for sl in langs:
+    if sl != l:
+      sibling_langs.append(sl)
+  res_dict, res_list = build_inverted_list(root, l, sibling_langs)
   cal = {}
   cal_list = []
   for res in res_list:
