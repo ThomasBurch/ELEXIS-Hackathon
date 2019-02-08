@@ -25,6 +25,8 @@ export class AppComponent implements AfterContentInit {
   svg: any;
   ticked: any;
   tickCount = 0;
+  zoomFactor = 1;
+  zoomStep = 0.2;
 
   ngAfterContentInit() {
     // create nodes and links
@@ -262,7 +264,7 @@ export class AppComponent implements AfterContentInit {
     
     node.on('mouseover', focus).on('mouseout', unfocus);
     
-    // graphLayout.on('tick', ticked);
+    graphLayout.on('tick', ticked);
 
   }
 
@@ -280,13 +282,17 @@ export class AppComponent implements AfterContentInit {
   }
 
   zoomIn() {
-    this.zoom.scale(2);
-    this.zoom.event(this.svg);
+    this.zoomFactor += this.zoomStep;
+    this.zoomFactor = this.zoomFactor > 4 ? 4 : this.zoomFactor;
+    console.log('zoom factor: ', this.zoomFactor);
+    this.zoom.scaleTo(this.svg, this.zoomFactor);
   }
 
   zoomOut() {
-    this.zoom.scale(0.5);
-    this.zoom.event(this.svg);
+    this.zoomFactor -= this.zoomStep;
+    this.zoomFactor = this.zoomFactor < 0.2 ? 0.2 : this.zoomFactor;
+    console.log('zoom factor: ', this.zoomFactor);
+    this.zoom.scaleTo(this.svg, this.zoomFactor);
   }
 
 }
