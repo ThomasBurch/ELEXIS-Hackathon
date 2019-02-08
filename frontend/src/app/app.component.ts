@@ -42,6 +42,7 @@ export class AppComponent implements AfterContentInit {
       for (const n of deList) {
         const tempNode = {
           id: n.id,
+          text: n.text,
           group: 1
         };
         nodes.push(tempNode);
@@ -53,7 +54,7 @@ export class AppComponent implements AfterContentInit {
             value: arabicEntry.count
           });
           if (!entryIdDict[arabicEntry.entry_id]) {
-            entryIdDict[arabicEntry.entry_id] = arabicEntry.entry_id;
+            entryIdDict[arabicEntry.entry_id] = {id: arabicEntry.entry_id, text: arabicEntry.text};
           }
           // for (const siblingConn of arabicEntry.connetion_info) {
           //   for (const sibId of siblingConn.sibling_ids) {
@@ -71,6 +72,7 @@ export class AppComponent implements AfterContentInit {
       if (entryIdDict[key]) {
         const tempNode = {
           id: key,
+          text: entryIdDict[key].text,
           group: 0
         };
         nodes.push(tempNode);
@@ -255,7 +257,7 @@ export class AppComponent implements AfterContentInit {
       .data(data.nodes)
       .enter()
       .append('text')
-      .text((d: any, i) => d.id)
+      .text((d: any, i) => d.id + '-' + d.text)
       .style('fill', '#555')
       .style('font-family', 'Arial')
       .style('font-size', 6)
