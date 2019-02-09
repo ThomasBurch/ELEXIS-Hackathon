@@ -1,9 +1,22 @@
 <div class="control">
   <button class="controlButton" (click)="stopSimulation()">stop simulation</button>
   <button class="controlButton" (click)="startSimulation()">start</button>
-  <button class="controlButton" (click)="step()">10 step</button>
+  <button class="controlButton" (click)="ease()">ease graph</button>
+  <button class="controlButton" (click)="tense()">tense graph</button>
   <button class="controlButton" (click)="zoomIn()">zoom in</button>
   <button class="controlButton" (click)="zoomOut()">zoom out</button>
 </div>
+<div class="main">
+  <div id="lemmalistPane">
+    <mat-selection-list dense #selectedClusters>
+      <mat-list-option caption dense *ngFor="let cluster of clusterGraph"
+        [selected]="cluster.selected"
+        (click)="selectCluster($event, cluster)"
+      >
+        {{ (clusterGraph.indexOf(cluster) + 1) + ': ' + cluster.nodes.length + ' nodes' }}
+      </mat-list-option>
+    </mat-selection-list>
+  </div>
+  <div id="canvas" #canvas></div>
 
-<svg id="canvas" #canvas></svg>
+</div>

@@ -1,129 +1,116 @@
 import { Component, AfterContentInit, ViewChild, ElementRef } from '@angular/core';
+import { MatSelectionList } from '@angular/material';
 
 import { OnInit } from '@angular/core';
 import * as d3 from 'd3';
 
 declare const require: any;
-const deList = require('../../../data/de_list.json');
-const enList = require('../../../data/en_list.json');
-const frList = require('../../../data/fr_list.json');
+// const deList = require('../../../data/de_list.json');
+// const enList = require('../../../data/en_list.json');
+// const frList = require('../../../data/fr_list.json');
+const deGraphInfo = require('../../../data/de_graph.json');
+const deClusterGraphInfo = require('../../../data/de_cluster_graph.json');
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterContentInit {
+export class AppComponent implements AfterContentInit, OnInit {
   
   @ViewChild('canvas') 
   canvas: ElementRef;
 
   data: any = {};
 
+  clusterGraph: any[] = deClusterGraphInfo;
+  
+  @ViewChild('selectedClusters') 
+  selectedClusters: MatSelectionList;
+
   simulation: any;
+  dataLayout: any;
   zoom: any;
   svg: any;
   ticked: any;
   tickCount = 0;
   zoomFactor = 1;
   zoomStep = 0.2;
+  nodeCharge = -1000;
+  linkDistance = 5;
+  nodeChargeStep = 500;
+  linkDistanceStep = 0.2;
 
-  ngAfterContentInit() {
-    // create nodes and links
-    const nodes = [];
-    const links = [];
-    const entryIdDict = {};
-    const nodeDict = {};
-    for (const list of [
-      deList, 
-      // enList, 
-      // frList
-    ]) {
-      for (const n of deList) {
-        const tempNode = {
-          id: n.id,
-          text: n.text,
-          group: 1
-        };
-        nodes.push(tempNode);
-        nodeDict[n.id] = nodes.indexOf(tempNode);
-        for (const arabicEntry of n.entry_list) {
-          links.push({
-            source_: n.id,
-            target_: arabicEntry.entry_id,
-            value: arabicEntry.count
-          });
-          if (!entryIdDict[arabicEntry.entry_id]) {
-            entryIdDict[arabicEntry.entry_id] = {id: arabicEntry.entry_id, text: arabicEntry.text};
-          }
-          // for (const siblingConn of arabicEntry.connetion_info) {
-          //   for (const sibId of siblingConn.sibling_ids) {
-          //     links.push({
-          //       source: n.id,
-          //       target: sibId,
-          //       value: 1
-          //     });
-          //   }
-          // }
-        }
+  constructor() {
+    this.clusterGraph = this.clusterGraph.filter((c) => c.nodes && c.nodes.length > 5);
+    for (const cluster of this.clusterGraph) {
+      cluster.selected = false;
+    }
+    this.clusterGraph[0].selected = true;
+  }
+
+  ngOnInit() {
+    (<any> this.selectedClusters).selectedOptions._multiple = false;
+  }
+
+  selectCluster(event: MouseEvent, cluster) {
+    for (const c of this.clusterGraph) {
+      if (c !== cluster) {
+        c.selected = false;
       }
     }
-    for (const key in entryIdDict) {
-      if (entryIdDict[key]) {
-        const tempNode = {
-          id: key,
-          text: entryIdDict[key].text,
-          group: 0
-        };
-        nodes.push(tempNode);
-        nodeDict[key] = nodes.indexOf(tempNode);
-      }
+    if (cluster.selected) {
+      cluster.selected = false;
+    } else {
+      cluster.selected = true;
     }
-    for (const l of links) {
-      l.source = nodeDict[l.source_];
-      l.target = nodeDict[l.target_];
+    this.showCluster();
+  }
+
+  showCluster() {
+    if (this.svg) {
+      this.svg.remove();
     }
-    this.data.nodes = nodes;
-    this.data.links = links;
+    const selectedClusters = this.clusterGraph.filter(c => c.selected);
+    if (selectedClusters.length === 0) {
+      return;
+    }
+    const cluster = selectedClusters[0];
+    this.data.nodes = cluster.nodes;
+    this.data.links = cluster.links;
     const data = this.data;
-    console.log(data);
+    // console.log(data);
 
     const width = this.canvas.nativeElement.clientWidth;
     const height = this.canvas.nativeElement.clientHeight;
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-    // d3.data(data).then((graph: any) => {
-      
+    const focusOpacity = 1;
+    const normalOpacity = 0.6;
+    const fadeOpacity = 0.1;
+
     const dataLayout = d3.forceSimulation(data.nodes)
-      .force('charge', d3.forceManyBody().strength(10))
-      .force('link', d3.forceLink(data.links).distance(2).strength(2));
+      .force('charge', d3.forceManyBody().strength(this.nodeCharge))
+      .force('link', d3.forceLink(data.links).distance(3).strength(1));
     
     const graphLayout = d3.forceSimulation(data.nodes)
-      .force('charge', d3.forceManyBody().strength(-1000))
+      .force('charge', d3.forceManyBody().strength(this.nodeCharge))
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force('x', d3.forceX(width / 2).strength(1))
       .force('y', d3.forceY(height / 2).strength(1))
-      .force('link', d3.forceLink(data.links).id((d: any) => d.id ).distance(2).strength(1))
+      .force('link', d3.forceLink(data.links).id((d: any) => d.id ).distance(this.linkDistance).strength(1))
       ;
     this.simulation = graphLayout;
     
-    const adjlist = [];
-    
-    // graph.nodes.forEach((d, i) => {
-    //   data.nodes.push({node: d});
-    //   data.nodes.push({node: d});
-    //   data.links.push({
-    //     source: i * 2,
-    //     target: i * 2 + 1
-    //   });
-    // });
-    // graph.links.forEach((d) => {
-    //   adjlist[d.source.index + '-' + d.target.index] = true;
-    //   adjlist[d.target.index + '-' + d.source.index] = true;
-    // });
+    const neighborsList = [];
+
+    data.links.forEach((d) => {
+      neighborsList[d.source.index + '-' + d.target.index] = true;
+      neighborsList[d.target.index + '-' + d.source.index] = true;
+    });
     
     const neigh = (a, b) => {
-      return a === b || adjlist[a + '-' + b];
+      return a === b || neighborsList[a + '-' + b];
     };
     const fixna = (x) => {
       if (isFinite(x)) {
@@ -131,26 +118,51 @@ export class AppComponent implements AfterContentInit {
       }
       return 0;
     };
-    
+
+    const onlyShowNeighborsAndSelf = (d) => {
+      const tempIndex = d.index;
+      node.style('cursor', (o: any) => {
+        return tempIndex === o.index ? 'pointer' : 'default';
+      });
+      node.style('opacity', (o: any) => {
+        return neigh(tempIndex, o.index) ? focusOpacity : normalOpacity;
+      });
+      node.attr('r', (o: any) => {
+        return neigh(tempIndex, o.index) ? 10 : 7;
+      });
+      label.style('opacity', (o: any) => {
+        return neigh(tempIndex, o.index) ? focusOpacity : fadeOpacity;
+      });
+      label.style('font-weight', (o: any) => {
+        return neigh(tempIndex, o.index) ? '700' : 'normal';
+      });
+      label.style('font-size', (o: any) => {
+        return neigh(tempIndex, o.index) ? 14 : 12;
+      });
+      // label.attr('display', (o: any) => {
+      //   return neigh(tempIndex, o.index) ? 'block' : 'none';
+      // });
+      link.style('opacity', (o: any) => {
+        return o.source.index === tempIndex || o.target.index === tempIndex ? focusOpacity : normalOpacity;
+      });
+    };
+    const showAll = () => {
+      // label.attr('display', 'block');
+      // label.attr('display', 'none');
+      node.style('opacity', normalOpacity);
+      node.attr('r', 7);
+      label.style('opacity', normalOpacity);
+      label.style('font-size', 12);
+      label.style('font-weight', 'normal');
+      link.style('opacity', normalOpacity);
+    };
+
     const focus = (d) => {
-        const indexObj = <any> (d3.select(d3.event.target).datum());
-        const index = indexObj.index;
-        node.style('opacity', (o: any) => {
-          return neigh(index, o.index) ? 1 : 0.1;
-        });
-        dataNode.attr('display', (o: any) => {
-          return neigh(index, o.index) ? 'block' : 'none';
-        });
-        link.style('opacity', (o: any) => {
-          return o.source.index === index || o.target.index === index ? 1 : 0.1;
-        });
+      onlyShowNeighborsAndSelf(d);
     };
     
     const unfocus = () => {
-      // dataNode.attr('display', 'block');
-      dataNode.attr('display', 'none');
-      node.style('opacity', 1);
-      link.style('opacity', 1);
+      showAll();
     };
     
     const updateLink = (ulink: any) => {
@@ -166,59 +178,41 @@ export class AppComponent implements AfterContentInit {
           return 'translate(' + fixna(d.x) + ',' + fixna(d.y) + ')';
         });
     };
+    const updateLable = (unode) => {
+        unode.attr('transform', (d) => {
+          return 'translate(' + fixna(d.x - 6) + ',' + fixna(d.y - 8) + ')';
+        });
+    };
     
     const dragstarted = (d) => {
       d3.event.sourceEvent.stopPropagation();
       if (!d3.event.active) {
-        graphLayout.alphaTarget(0.3).restart();
+        graphLayout.alpha(0.3);
+        graphLayout.alphaTarget(0).restart();
       }
-      d.fx = d.x;
-      d.fy = d.y;
     };
     
     const dragged = (d) => {
       d.fx = d3.event.x;
       d.fy = d3.event.y;
+      onlyShowNeighborsAndSelf(d);
     };
     
-    const dragended = (d) => {
-      if (!d3.event.active) {
-        graphLayout.alphaTarget(0);
-      }
-      d.fx = null;
-      d.fy = null;
-    };
+    const dragended = (d) => {};
     
     const ticked = () => {
       this.tickCount++;
+      // if (this.tickCount > 250) {
+      //   this.simulation.stop();
+      // }
       node.call(updateNode);
       link.call(updateLink);
-  
-      // dataLayout.alphaTarget(0.3).restart();
-      // dataNode.each(function(d: any, i) {
-        // if (i % 2 === 0) {
-        //   d.x = d.node.x;
-        //   d.y = d.node.y;
-        // } else {
-        //   const b = this.getBBox();
-
-        //   const diffX = d.x - d.node.x;
-        //   const diffY = d.y - d.node.y;
-
-        //   const dist = Math.sqrt(diffX * diffX + diffY * diffY);
-
-        //   let shiftX = b.width * (diffX - dist) / (dist * 2);
-        //   shiftX = Math.max(-b.width, Math.min(0, shiftX));
-        //   const shiftY = 16;
-        //   this.setAttribute('transform', 'translate(' + shiftX + ',' + shiftY + ')');
-        // }
-      // });
-      dataNode.call(updateNode);
+      label.call(updateLable);
     
     };
     this.ticked = ticked;
     
-    const svg = d3.select('#canvas').attr('width', width).attr('height', height);
+    const svg = d3.select('#canvas').append('svg').attr('width', width).attr('height', height);
     const container = svg.append('g');
     this.svg = svg;
     svg.call(
@@ -232,6 +226,7 @@ export class AppComponent implements AfterContentInit {
       .data(data.links)
       .enter()
       .append('line')
+      .style('opacity', normalOpacity)
       .attr('stroke', '#aaa')
       .attr('stroke-width', '1px');
     
@@ -240,60 +235,81 @@ export class AppComponent implements AfterContentInit {
       .data(data.nodes)
       .enter()
       .append('circle')
-      .attr('r', 2)
-      .attr('fill', (d: any) => color(d.group));
+      .attr('r', 7)
+      .style('opacity', normalOpacity)
+      .attr('fill', (d: any) => color(d.group + ''));
     
     node.on('mouseover', focus).on('mouseout', unfocus);
     
-    // node.call(
-    //   d3.drag()
-    //     .on('start', dragstarted)
-    //     .on('drag', dragged)
-    //     .on('end', dragended)
-    // );
+    node.call(
+      d3.drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended)
+    );
     
-    const dataNode = container.append('g').attr('class', 'dataNodes')
+    const label = container.append('g').attr('class', 'labels')
       .selectAll('text')
       .data(data.nodes)
       .enter()
       .append('text')
-      .text((d: any, i) => d.id + '-' + d.text)
-      .style('fill', '#555')
-      .style('font-family', 'Arial')
-      .style('font-size', 6)
+      // .text((d: any, i) => d.id + '-' + d.text)
+      .text((d: any, i) => d.text)
+      .style('fill', '#666')
+      .style('font-size', 12)
+      .style('font-family', 'Sans')
+      .style('font-weight', 'normal')
+      .style('opacity', normalOpacity)
       // .attr('display', 'none')
-      .style('pointer-events', 'none'); // to prevent mouseover/drag capture
+      .style('pointer-events', 'none');
     
     node.on('mouseover', focus).on('mouseout', unfocus);
     
     graphLayout.on('tick', ticked);
+  }
 
+  ngAfterContentInit() {
+    this.showCluster();
   }
 
   stopSimulation() {
     this.simulation.stop();
-    console.log('ticked: ', this.tickCount);
   }
 
   startSimulation() {
-    this.simulation.on('tick', this.ticked);
+    this.simulation.force('charge', d3.forceManyBody().strength(this.nodeCharge))
+    .force('link', d3.forceLink(this.data.links).id((d: any) => d.id ).distance(this.linkDistance).strength(1));
+    this.simulation.alpha(0.3);
+    this.simulation.alphaTarget(0).restart();
   }
 
-  step() {
-    this.simulation.tick();
+  ease() {
+    this.nodeCharge -= this.nodeChargeStep;
+    this.linkDistance += this.linkDistanceStep;
+    console.log(this.nodeCharge, this.linkDistance);
+    this.startSimulation();
+  }
+
+  tense() {
+    if (this.nodeCharge >= 0) {
+      this.nodeCharge = -500;
+      return;
+    }
+    this.nodeCharge += this.nodeChargeStep;
+    this.linkDistance -= this.linkDistanceStep;
+    console.log(this.nodeCharge, this.linkDistance);
+    this.startSimulation();
   }
 
   zoomIn() {
     this.zoomFactor += this.zoomStep;
     this.zoomFactor = this.zoomFactor > 4 ? 4 : this.zoomFactor;
-    console.log('zoom factor: ', this.zoomFactor);
     this.zoom.scaleTo(this.svg, this.zoomFactor);
   }
 
   zoomOut() {
     this.zoomFactor -= this.zoomStep;
     this.zoomFactor = this.zoomFactor < 0.2 ? 0.2 : this.zoomFactor;
-    console.log('zoom factor: ', this.zoomFactor);
     this.zoom.scaleTo(this.svg, this.zoomFactor);
   }
 

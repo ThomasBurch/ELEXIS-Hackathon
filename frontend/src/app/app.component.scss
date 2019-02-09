@@ -2,7 +2,18 @@
   height: 20px;
 }
 
-#canvas {
-  width: 100%;
+
+.main {
+  display: flex;
+  flex-direction: row;
   flex-grow: 1;
+
+  #lemmalistPane {
+    min-width: 180px;
+    // background-color: cadetblue;
+    overflow: auto;
+  }
+  #canvas {
+    flex-grow: 1;
+  }
 }

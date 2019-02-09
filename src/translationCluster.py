@@ -45,18 +45,30 @@ def add_id_to_translations_in_entries(root, lang):
 add_id_to_translations_in_entries(root, 'de')
 add_id_to_translations_in_entries(root, 'en')
 add_id_to_translations_in_entries(root, 'fr')
-pp.pprint(text_id_lang_dict)
+# pp.pprint(text_id_lang_dict)
+
+group_lang_map = {
+  'ar': 0,
+  'de': 1,
+  'en': 2,
+  'fr': 3,
+}
 
 def build_inverted_list(root, lang, sibling_langs):
   entry_elems = root.findall('.//tei:div[@type="entries"]/tei:entry', ns)
+  entry_dict = {}
   res_dict = {}
   res_list = []
   text_dict = text_id_lang_dict[lang]
   for entry in entry_elems:
     entry_id = entry.attrib[xml_id_key]
     lemma_form = entry.find('./tei:form[@type="lemma"]/tei:orth', ns)
+    multiwordunit_form = entry.find('./tei:form[@type="multiWordUnit"]/tei:orth', ns)
     lemma_form_text = None if lemma_form == None else lemma_form.text
+    multiwordunit_form_text = None if multiwordunit_form == None else multiwordunit_form.text
     entry_text = None if lemma_form_text == None else lemma_form_text
+    entry_text = multiwordunit_form_text if entry_text == None else entry_text
+    entry_dict[entry_id] = entry_text
     trans_elems = entry.findall('.//tei:sense/tei:cit[@xml:lang="%s"]' % (lang), ns)
     for trans in trans_elems:
       # find ids of siblings
@@ -103,7 +115,97 @@ def build_inverted_list(root, lang, sibling_langs):
     res_dict[key]['count'] = count
     res_list.append({'id': key, 'text': text_dict[key], 'count': count, 'entry_list': res_dict[key]['entry_list']})
   res_list = sorted(res_list, key = lambda item: item['count'], reverse=True)
-  return res_dict, res_list
+  
+  # build graph data
+  nodes = []
+  links = []
+  node_count = 0
+  node_dict = {}
+  for entry_id in entry_dict.keys():
+    temp_node = {
+      'id': entry_id,
+      'text': entry_dict[entry_id],
+      'group': group_lang_map['ar'],
+      'target': [],
+      'in_cluster': False
+    }
+    nodes.append(temp_node)
+    node_dict[entry_id] = {'index': node_count, 'node': temp_node}
+    node_count += 1
+  for trans_node in res_list:
+    temp_node = {
+      'id': trans_node['id'],
+      'text': trans_node['text'],
+      'target': [],
+      'in_cluster': False,
+      'group': group_lang_map[lang]
+    }
+    nodes.append(temp_node)
+    node_dict[trans_node['id']] = {'index': node_count, 'node': temp_node}
+    node_count += 1
+    for arlink in trans_node['entry_list']:
+      links.append({
+        'source': node_dict[trans_node['id']]['index'], # index of node in node_dict
+        'source_': trans_node['id'],
+        'target': node_dict[arlink['entry_id']]['index'], # index of node in node_dict
+        'target_': arlink['entry_id'],
+        'value': arlink['count']
+      })
+      if node_dict[arlink['entry_id']]['node'] not in temp_node['target']:
+        temp_node['target'].append(node_dict[arlink['entry_id']]['node'])
+      if temp_node not in temp_node['target']:
+        node_dict[arlink['entry_id']]['node']['target'].append(temp_node)
+  # for link in links:
+  #   link['source'] = node_dict[link['source_']]
+  #   link['target'] = node_dict[link['target_']]
+
+  # find clusters
+  clusters = []
+  def build_cluster(cluster, node):
+    for target in node['target']:
+      if target not in cluster:
+        cluster.append(target)
+        target['in_cluster'] = True
+        cluster = build_cluster(cluster, target)
+    return cluster
+
+  for node in nodes:
+    if node['in_cluster'] == False:
+      clusters.append(build_cluster([], node))
+  
+  for node in nodes:
+    if node['in_cluster'] == False:
+      pp.pprint(node)
+  sorted_clusters = sorted(clusters, key=lambda item : len(item), reverse=True)
+  # add graph info in clusters
+  clusters_graph_info = []
+  for cluster in sorted_clusters:
+    cluster_nodes = []
+    cluster_links = []
+    for node in cluster:
+      cluster_nodes.append({
+        'id': node['id'],
+        'text': node['text'],
+        'group': node['group']
+      })
+      for target in node['target']:
+        cluster_links.append({
+          'source': cluster.index(node),
+          'source_': node['id'],
+          'target': cluster.index(target),
+          'target_': target['id']
+        })
+    clusters_graph_info.append({'nodes': cluster_nodes, 'links': cluster_links})
+
+
+
+  # delete target in graph_info
+  for node in nodes:
+    del node['target']
+  
+  graph_info = {'nodes': nodes, 'links': links}
+
+  return res_dict, res_list, graph_info, clusters_graph_info
 
 langs = ['de', 'en', 'fr']
 for l in langs:
@@ -111,7 +213,7 @@ for l in langs:
   for sl in langs:
     if sl != l:
       sibling_langs.append(sl)
-  res_dict, res_list = build_inverted_list(root, l, sibling_langs)
+  res_dict, res_list, graph_info, clusters_graph_info = build_inverted_list(root, l, sibling_langs)
   cal = {}
   cal_list = []
   for res in res_list:
@@ -132,10 +234,16 @@ for l in langs:
   out = l + ' count\tnumber of texts\tfirst 5 texts\n'
   for item in cal_list:
     out += str(item[0]) + '\t' + str(item[1]) + '\t' + item[2] + '\n'
-  print(out)
-  # break
-  with open(os.path.join(os.getcwd(), 'data', l + '_list.json'), 'w', encoding='utf8') as f:
-    data = json.dumps(res_list, indent=2, ensure_ascii=False)
+  # print(out)
+  # with open(os.path.join(os.getcwd(), 'data', l + '_list.json'), 'w', encoding='utf8') as f:
+  #   data = json.dumps(res_list, indent=2, ensure_ascii=False)
+  #   f.write(data)
+  # with open(os.path.join(os.getcwd(), 'data', l + '_graph.json'), 'w', encoding='utf8') as f:
+  #   data = json.dumps(graph_info, indent=2, ensure_ascii=False)
+  #   f.write(data)
+  with open(os.path.join(os.getcwd(), 'data', l + '_cluster_graph.json'), 'w', encoding='utf8') as f:
+    data = json.dumps(clusters_graph_info, indent=2, ensure_ascii=False)
     f.write(data)
+  break
 
 

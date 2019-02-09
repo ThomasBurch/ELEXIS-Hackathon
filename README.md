@@ -10,7 +10,7 @@
 
 ### not understand:
 
-* one example sentence has 2 translations with fully different meanings
+* example sentence has 2 translations with fully different meanings
 
 ```
 <cit xml:id="claa_qadd_ma_rayyadhtu_wa_laa_habb_yifhim_001" type="example">
