@@ -23,13 +23,18 @@ export class AppComponent implements AfterContentInit, OnInit {
   
   @ViewChild('canvas') 
   canvas: ElementRef;
+  
+  @ViewChild('selectedClusters') 
+  selectedClusters: MatSelectionList;
 
   data: any = {};
 
   clusterGraph: any[];
-  
-  @ViewChild('selectedClusters') 
-  selectedClusters: MatSelectionList;
+  clusterGraphFiltered: any[];
+  selectedLang = 'de';
+  minNodes = 6;
+  maxNodes = 99999;
+  clusterFilterInput: string = '>' + (this.minNodes - 1);
 
   simulation: any;
   simulationStopped = false;
@@ -57,7 +62,57 @@ export class AppComponent implements AfterContentInit, OnInit {
     this.selectClusterLang('de', true);
   }
 
+  filterChange() {
+    const filter = this.clusterFilterInput;
+    if (/^[0-9]+$/g.test(filter)) {
+      const num = parseInt(filter, 10);
+      this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, num, num, '');
+    } else if (filter === '') {
+      this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, this.maxNodes, '');
+    } else {
+      if (filter.indexOf('>') === 0) {
+        const p = filter.replace(/^>/, '').trim();
+        const num = parseInt(p, 10);
+        if (!isNaN(num)) {
+          this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, num + 1, this.maxNodes, '');
+        }
+      } else if (filter.indexOf('<') === 0) {
+        const p = filter.replace(/^</, '').trim();
+        const num = parseInt(p, 10);
+        if (!isNaN(num)) {
+          this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, num, '');
+        }
+      }  else {
+        this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, this.maxNodes, filter);
+      }
+    }
+  }
+
+  filterClusters(cg: any[], min: number, max: number, text: string) {
+    this.removeGraph();
+    let filtered = cg;
+    if (text !== '') {
+      filtered = filtered.filter((c: any) => {
+        for (const n of c.nodes) {
+          if (n.text.indexOf(text) > -1) {
+            return true;
+          }
+        }
+        return false;
+      });
+    } else {
+      filtered = this.clusterGraph;
+    }
+    filtered = filtered.filter((c: any) => c.nodes.length >= min && c.nodes.length <= max);
+    for (const cluster of filtered) {
+      cluster.selected = false;
+    }
+    return filtered;
+  }
+
   selectClusterLang(lang: string, redraw: boolean) {
+
+    this.selectedLang = lang;
     if (lang === 'de') {
       this.clusterGraph = deClusterGraphInfo;
     } else if (lang === 'en') {
@@ -67,11 +122,8 @@ export class AppComponent implements AfterContentInit, OnInit {
     } else if (lang === 'all-langs') {
       this.clusterGraph = allLangsClusterGraphInfo;
     }
-    this.clusterGraph = this.clusterGraph.filter((c) => c.nodes && c.nodes.length > 5);
-    for (const cluster of this.clusterGraph) {
-      cluster.selected = false;
-    }
-    this.clusterGraph[0].selected = true;
+    this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, this.maxNodes, '');
+    this.clusterGraphFiltered[this.clusterGraphFiltered.length - 1].selected = true;
     if (redraw) {
       this.showCluster();
     }
@@ -83,7 +135,7 @@ export class AppComponent implements AfterContentInit, OnInit {
   }
 
   selectCluster(event: MouseEvent, cluster) {
-    for (const c of this.clusterGraph) {
+    for (const c of this.clusterGraphFiltered) {
       if (c !== cluster) {
         c.selected = false;
       }
@@ -96,12 +148,16 @@ export class AppComponent implements AfterContentInit, OnInit {
     this.showCluster();
   }
 
-  showCluster() {
+  removeGraph() {
     if (this.svg) {
       this.simulation.stop();
       this.svg.remove();
     }
-    const selectedClusters = this.clusterGraph.filter(c => c.selected);
+  }
+
+  showCluster() {
+    this.removeGraph();
+    const selectedClusters = this.clusterGraphFiltered.filter(c => c.selected);
     if (selectedClusters.length === 0) {
       return;
     }

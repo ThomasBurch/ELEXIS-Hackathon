@@ -20,9 +20,13 @@ $tabControlH: 30px;
   height: calc(100% - #{$tabControlH});
 
   #lemmalistPane {
-    min-width: 180px;
+    min-width: 220px;
     // background-color: cadetblue;
     overflow: auto;
+
+    .filter-form-field {
+      width: 100%;
+    }
   }
   #graphPane {
     display: flex;
