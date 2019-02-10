@@ -123,7 +123,8 @@ export class AppComponent implements AfterContentInit, OnInit {
       this.clusterGraph = allLangsClusterGraphInfo;
     }
     this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, this.maxNodes, '');
-    this.clusterGraphFiltered[this.clusterGraphFiltered.length - 1].selected = true;
+    this.clusterGraphFiltered[0].selected = true;
+    // this.clusterGraphFiltered[this.clusterGraphFiltered.length - 1].selected = true;
     if (redraw) {
       this.showCluster();
     }
