@@ -1,19 +1,47 @@
-.controlButton {
-  height: 20px;
-}
 
+$space: 2px;
+$tabControlH: 30px;
 
 .main {
+  // margin: 2px 2px 2px 2px;
+  margin: $space;
+  width: calc(100% - #{$space} * 2);
+  height: calc(100% - #{$space} * 2);
+
+}
+.tabControl {
+  width: 100%;
+  height: $tabControlH;
+  
+}
+.graphMain {
   display: flex;
   flex-direction: row;
-  flex-grow: 1;
+  height: calc(100% - #{$tabControlH});
 
   #lemmalistPane {
     min-width: 180px;
     // background-color: cadetblue;
     overflow: auto;
   }
-  #canvas {
+  #graphPane {
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
+    margin-left: 5px;
+    
+    .graphControl{
+      margin-bottom: 5px;
+      .controlButton {
+        height: 20px;
+        line-height: 20px !important;
+        margin-right: 2px;
+      }
+    }
+    #canvas {
+      flex-grow: 1;
+      border: 1px solid green;
+    }
   }
+  
 }

@@ -1,22 +1,38 @@
-<div class="control">
-  <button class="controlButton" (click)="stopSimulation()">stop simulation</button>
-  <button class="controlButton" (click)="startSimulation()">start</button>
-  <button class="controlButton" (click)="ease()">ease graph</button>
-  <button class="controlButton" (click)="tense()">tense graph</button>
-  <button class="controlButton" (click)="zoomIn()">zoom in</button>
-  <button class="controlButton" (click)="zoomOut()">zoom out</button>
-</div>
 <div class="main">
-  <div id="lemmalistPane">
-    <mat-selection-list dense #selectedClusters>
-      <mat-list-option caption dense *ngFor="let cluster of clusterGraph"
-        [selected]="cluster.selected"
-        (click)="selectCluster($event, cluster)"
-      >
-        {{ (clusterGraph.indexOf(cluster) + 1) + ': ' + cluster.nodes.length + ' nodes' }}
-      </mat-list-option>
-    </mat-selection-list>
+  <div class="tabControl">
+    <mat-tab-group mat-align-tabs="end" (selectedTabChange)="langTabChange($event)">
+      <mat-tab label="ar-de">
+      </mat-tab>
+      <mat-tab label="ar-en">
+      </mat-tab>
+      <mat-tab label="ar-fr">
+      </mat-tab>
+      <mat-tab label="all-langs">
+      </mat-tab>
+    </mat-tab-group>
   </div>
-  <div id="canvas" #canvas></div>
-
+  <div class="graphMain">
+    <div id="lemmalistPane">
+      <mat-selection-list dense #selectedClusters>
+        <mat-list-option caption dense *ngFor="let cluster of clusterGraph"
+          [selected]="cluster.selected"
+          (click)="selectCluster($event, cluster)"
+        >
+          {{ (clusterGraph.indexOf(cluster) + 1) + ': ' + cluster.nodes.length + ' nodes' }}
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+    <div id="graphPane">
+      <div class="graphControl">
+        <button mat-raised-button class="controlButton" (click)="stopSimulation()">stop</button>
+        <button mat-raised-button class="controlButton" (click)="startSimulation()">start</button>
+        <button mat-raised-button class="controlButton" (click)="ease()">ease graph</button>
+        <button mat-raised-button class="controlButton" (click)="tense()">tense graph</button>
+        <button mat-raised-button class="controlButton" (click)="zoomIn()">zoom in</button>
+        <button mat-raised-button class="controlButton" (click)="zoomOut()">zoom out</button>
+      </div>
+      <div id="canvas" #canvas></div>
+    </div>
+  </div>
+  
 </div>

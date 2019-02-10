@@ -20,6 +20,52 @@ text_id_lang_dict = {}
 ns = {'tei': 'http://www.tei-c.org/ns/1.0', 'xml': 'http://www.w3.org/XML/1998/namespace'}
 xml_id_key = '{%s}%s' % (ns['xml'], 'id')
 
+group_lang_map = {
+  'ar': 0,
+  'de': 1,
+  'en': 2,
+  'fr': 3,
+}
+
+not_allowed_text_list = [
+  '',
+  '-'
+]
+
+def build_cluster(cluster, node):
+  for target in node['target']:
+    if target not in cluster and target['text'] not in not_allowed_text_list:
+      cluster.append(target)
+      target['in_cluster'] = True
+      cluster = build_cluster(cluster, target)
+  return cluster
+
+def build_cluster_graph_info(clusters, sort=False, sort_reverse=False):
+  if sort == True:
+    s_clusters = sorted(clusters, key=lambda item : len(item), reverse=True)
+  else:
+    s_clusters = clusters
+  clusters_graph = []
+  for cluster in s_clusters:
+    cluster_nodes = []
+    cluster_links = []
+    for node in cluster:
+      cluster_nodes.append({
+        'id': node['id'],
+        'text': node['text'],
+        'group': node['group']
+      })
+      for target in node['target']:
+        if target['text']  not in not_allowed_text_list:
+          cluster_links.append({
+            'source': cluster.index(node),
+            'source_': node['id'],
+            'target': cluster.index(target),
+            'target_': target['id']
+          })
+    clusters_graph.append({'nodes': cluster_nodes, 'links': cluster_links})
+  return clusters_graph 
+
 def add_id_to_translations_in_entries(root, lang):
   num = 0
   elems = root.findall('.//tei:div[@type="entries"]/tei:entry//tei:sense/tei:cit[@xml:lang="%s"]' % (lang), ns)
@@ -47,12 +93,6 @@ add_id_to_translations_in_entries(root, 'en')
 add_id_to_translations_in_entries(root, 'fr')
 # pp.pprint(text_id_lang_dict)
 
-group_lang_map = {
-  'ar': 0,
-  'de': 1,
-  'en': 2,
-  'fr': 3,
-}
 
 def build_inverted_list(root, lang, sibling_langs):
   entry_elems = root.findall('.//tei:div[@type="entries"]/tei:entry', ns)
@@ -161,59 +201,34 @@ def build_inverted_list(root, lang, sibling_langs):
 
   # find clusters
   clusters = []
-  def build_cluster(cluster, node):
-    for target in node['target']:
-      if target not in cluster:
-        cluster.append(target)
-        target['in_cluster'] = True
-        cluster = build_cluster(cluster, target)
-    return cluster
-
   for node in nodes:
-    if node['in_cluster'] == False:
+    if node['in_cluster'] == False and node['text'] not in not_allowed_text_list:
       clusters.append(build_cluster([], node))
   
+  not_in_cluster_count = 0
   for node in nodes:
     if node['in_cluster'] == False:
-      pp.pprint(node)
-  sorted_clusters = sorted(clusters, key=lambda item : len(item), reverse=True)
-  # add graph info in clusters
-  clusters_graph_info = []
-  for cluster in sorted_clusters:
-    cluster_nodes = []
-    cluster_links = []
-    for node in cluster:
-      cluster_nodes.append({
-        'id': node['id'],
-        'text': node['text'],
-        'group': node['group']
-      })
-      for target in node['target']:
-        cluster_links.append({
-          'source': cluster.index(node),
-          'source_': node['id'],
-          'target': cluster.index(target),
-          'target_': target['id']
-        })
-    clusters_graph_info.append({'nodes': cluster_nodes, 'links': cluster_links})
+      pp.pprint(node['id'] + ' text: ' + node['text'])
+      not_in_cluster_count += 1
+  pp.pprint(lang + ' not in cluster: ' + str(not_in_cluster_count))
 
+  clusters_graph_info = build_cluster_graph_info(clusters, sort=True, sort_reverse=True)
 
+  return res_dict, res_list, clusters_graph_info
 
-  # delete target in graph_info
-  for node in nodes:
-    del node['target']
-  
-  graph_info = {'nodes': nodes, 'links': links}
-
-  return res_dict, res_list, graph_info, clusters_graph_info
-
-langs = ['de', 'en', 'fr']
+langs = [
+  'de', 
+  'en', 
+  'fr'
+]
+clusters_graph_info_list = []
 for l in langs:
   sibling_langs = []
   for sl in langs:
     if sl != l:
       sibling_langs.append(sl)
-  res_dict, res_list, graph_info, clusters_graph_info = build_inverted_list(root, l, sibling_langs)
+  res_dict, res_list, clusters_graph_info = build_inverted_list(root, l, sibling_langs)
+  clusters_graph_info_list.append(clusters_graph_info)
   cal = {}
   cal_list = []
   for res in res_list:
@@ -238,12 +253,53 @@ for l in langs:
   # with open(os.path.join(os.getcwd(), 'data', l + '_list.json'), 'w', encoding='utf8') as f:
   #   data = json.dumps(res_list, indent=2, ensure_ascii=False)
   #   f.write(data)
-  # with open(os.path.join(os.getcwd(), 'data', l + '_graph.json'), 'w', encoding='utf8') as f:
-  #   data = json.dumps(graph_info, indent=2, ensure_ascii=False)
-  #   f.write(data)
   with open(os.path.join(os.getcwd(), 'data', l + '_cluster_graph.json'), 'w', encoding='utf8') as f:
     data = json.dumps(clusters_graph_info, indent=2, ensure_ascii=False)
     f.write(data)
-  break
+  # break
 
+## create cluster_graph with all the langs
+clusters_all = []
+node_dict = {}
+for clusters_graph_info in clusters_graph_info_list:
+  for cluster in clusters_graph_info:
+    nodes = cluster['nodes']
+    for node in nodes:
+      if node['id'] not in node_dict.keys():
+        node_dict[node['id']] = node
+        node['target'] = []
+        node['in_cluster'] = False
 
+for clusters_graph_info in clusters_graph_info_list:
+  for cluster in clusters_graph_info:
+    links = cluster['links']
+    for link in links:
+      source_id = link['source_']
+      target_id = link['target_']
+      source_node = node_dict[source_id]
+      target_node = node_dict[target_id]
+      if target_node not in source_node['target']:
+        source_node['target'].append(target_node)
+      if source_node not in target_node['target']:
+        target_node['target'].append(source_node)
+
+node_list = []
+for id in node_dict.keys():
+  node_list.append(node_dict[id])
+
+for node in node_list:
+  if node['in_cluster'] == False and node['text'] not in not_allowed_text_list:
+    clusters_all.append(build_cluster([], node))
+
+not_in_cluster_count = 0
+for node in node_list:
+  if node['in_cluster'] == False:
+    # pp.pprint(node)
+    not_in_cluster_count += 1
+pp.pprint('for all langs, not in cluster: ' + str(not_in_cluster_count))
+
+clusters_graph_all_info = build_cluster_graph_info(clusters_all, sort=True, sort_reverse=True)
+
+with open(os.path.join(os.getcwd(), 'data', 'all_langs_cluster_graph.json'), 'w', encoding='utf8') as f:
+  data = json.dumps(clusters_graph_all_info, indent=2, ensure_ascii=False)
+  f.write(data)

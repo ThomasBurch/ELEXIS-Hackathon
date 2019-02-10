@@ -1,5 +1,5 @@
 import { Component, AfterContentInit, ViewChild, ElementRef } from '@angular/core';
-import { MatSelectionList } from '@angular/material';
+import { MatSelectionList, MatTabChangeEvent } from '@angular/material';
 
 import { OnInit } from '@angular/core';
 import * as d3 from 'd3';
@@ -8,8 +8,11 @@ declare const require: any;
 // const deList = require('../../../data/de_list.json');
 // const enList = require('../../../data/en_list.json');
 // const frList = require('../../../data/fr_list.json');
-const deGraphInfo = require('../../../data/de_graph.json');
+// const deGraphInfo = require('../../../data/de_graph.json');
 const deClusterGraphInfo = require('../../../data/de_cluster_graph.json');
+const enClusterGraphInfo = require('../../../data/en_cluster_graph.json');
+const frClusterGraphInfo = require('../../../data/fr_cluster_graph.json');
+const allLangsClusterGraphInfo = require('../../../data/all_langs_cluster_graph.json');
 
 @Component({
   selector: 'app-root',
@@ -23,13 +26,15 @@ export class AppComponent implements AfterContentInit, OnInit {
 
   data: any = {};
 
-  clusterGraph: any[] = deClusterGraphInfo;
+  clusterGraph: any[];
   
   @ViewChild('selectedClusters') 
   selectedClusters: MatSelectionList;
 
   simulation: any;
+  simulationStopped = false;
   dataLayout: any;
+  nodeColors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
   zoom: any;
   svg: any;
   ticked: any;
@@ -42,15 +47,39 @@ export class AppComponent implements AfterContentInit, OnInit {
   linkDistanceStep = 0.2;
 
   constructor() {
+  }
+
+  ngOnInit() {
+    (<any> this.selectedClusters).selectedOptions._multiple = false;
+  }
+
+  ngAfterContentInit() {
+    this.selectClusterLang('de', true);
+  }
+
+  selectClusterLang(lang: string, redraw: boolean) {
+    if (lang === 'de') {
+      this.clusterGraph = deClusterGraphInfo;
+    } else if (lang === 'en') {
+      this.clusterGraph = enClusterGraphInfo;
+    } else if (lang === 'fr') {
+      this.clusterGraph = frClusterGraphInfo;
+    } else if (lang === 'all-langs') {
+      this.clusterGraph = allLangsClusterGraphInfo;
+    }
     this.clusterGraph = this.clusterGraph.filter((c) => c.nodes && c.nodes.length > 5);
     for (const cluster of this.clusterGraph) {
       cluster.selected = false;
     }
     this.clusterGraph[0].selected = true;
+    if (redraw) {
+      this.showCluster();
+    }
   }
 
-  ngOnInit() {
-    (<any> this.selectedClusters).selectedOptions._multiple = false;
+  langTabChange(event: MatTabChangeEvent) {
+    this.selectClusterLang(event.tab.textLabel.replace(/ar-/, ''), true);
+  
   }
 
   selectCluster(event: MouseEvent, cluster) {
@@ -69,6 +98,7 @@ export class AppComponent implements AfterContentInit, OnInit {
 
   showCluster() {
     if (this.svg) {
+      this.simulation.stop();
       this.svg.remove();
     }
     const selectedClusters = this.clusterGraph.filter(c => c.selected);
@@ -83,7 +113,7 @@ export class AppComponent implements AfterContentInit, OnInit {
 
     const width = this.canvas.nativeElement.clientWidth;
     const height = this.canvas.nativeElement.clientHeight;
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
+    // const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     const focusOpacity = 1;
     const normalOpacity = 0.6;
@@ -109,7 +139,7 @@ export class AppComponent implements AfterContentInit, OnInit {
       neighborsList[d.target.index + '-' + d.source.index] = true;
     });
     
-    const neigh = (a, b) => {
+    const checkNeighor = (a, b) => {
       return a === b || neighborsList[a + '-' + b];
     };
     const fixna = (x) => {
@@ -121,40 +151,40 @@ export class AppComponent implements AfterContentInit, OnInit {
 
     const onlyShowNeighborsAndSelf = (d) => {
       const tempIndex = d.index;
-      node.style('cursor', (o: any) => {
+      nodeGroup.style('cursor', (o: any) => {
         return tempIndex === o.index ? 'pointer' : 'default';
       });
-      node.style('opacity', (o: any) => {
-        return neigh(tempIndex, o.index) ? focusOpacity : normalOpacity;
+      nodeGroup.style('opacity', (o: any) => {
+        return checkNeighor(tempIndex, o.index) ? focusOpacity : normalOpacity;
       });
-      node.attr('r', (o: any) => {
-        return neigh(tempIndex, o.index) ? 10 : 7;
+      nodeGroup.attr('r', (o: any) => {
+        return checkNeighor(tempIndex, o.index) ? 10 : 7;
       });
-      label.style('opacity', (o: any) => {
-        return neigh(tempIndex, o.index) ? focusOpacity : fadeOpacity;
+      labelGroup.style('opacity', (o: any) => {
+        return checkNeighor(tempIndex, o.index) ? focusOpacity : fadeOpacity;
       });
-      label.style('font-weight', (o: any) => {
-        return neigh(tempIndex, o.index) ? '700' : 'normal';
+      labelGroup.style('font-weight', (o: any) => {
+        return checkNeighor(tempIndex, o.index) ? '700' : 'normal';
       });
-      label.style('font-size', (o: any) => {
-        return neigh(tempIndex, o.index) ? 14 : 12;
+      labelGroup.style('font-size', (o: any) => {
+        return checkNeighor(tempIndex, o.index) ? 14 : 12;
       });
       // label.attr('display', (o: any) => {
-      //   return neigh(tempIndex, o.index) ? 'block' : 'none';
+      //   return checkNeighor(tempIndex, o.index) ? 'block' : 'none';
       // });
-      link.style('opacity', (o: any) => {
+      linkGroup.style('opacity', (o: any) => {
         return o.source.index === tempIndex || o.target.index === tempIndex ? focusOpacity : normalOpacity;
       });
     };
     const showAll = () => {
       // label.attr('display', 'block');
       // label.attr('display', 'none');
-      node.style('opacity', normalOpacity);
-      node.attr('r', 7);
-      label.style('opacity', normalOpacity);
-      label.style('font-size', 12);
-      label.style('font-weight', 'normal');
-      link.style('opacity', normalOpacity);
+      nodeGroup.style('opacity', normalOpacity);
+      nodeGroup.attr('r', 7);
+      labelGroup.style('opacity', normalOpacity);
+      labelGroup.style('font-size', 12);
+      labelGroup.style('font-weight', 'normal');
+      linkGroup.style('opacity', normalOpacity);
     };
 
     const focus = (d) => {
@@ -178,6 +208,7 @@ export class AppComponent implements AfterContentInit, OnInit {
           return 'translate(' + fixna(d.x) + ',' + fixna(d.y) + ')';
         });
     };
+    
     const updateLable = (unode) => {
         unode.attr('transform', (d) => {
           return 'translate(' + fixna(d.x - 6) + ',' + fixna(d.y - 8) + ')';
@@ -187,27 +218,41 @@ export class AppComponent implements AfterContentInit, OnInit {
     const dragstarted = (d) => {
       d3.event.sourceEvent.stopPropagation();
       if (!d3.event.active) {
+        // if (!this.simulationStopped) {
         graphLayout.alpha(0.3);
         graphLayout.alphaTarget(0).restart();
+        // } 
       }
     };
     
-    const dragged = (d) => {
-      d.fx = d3.event.x;
-      d.fy = d3.event.y;
+    const dragging = (d) => {
+      d.fx = d.x + d3.event.dx;
+      d.fy = d.y + d3.event.dy;
+      // setNodeFixPosition(d);
       onlyShowNeighborsAndSelf(d);
     };
     
-    const dragended = (d) => {};
+    const dragended = (d) => {
+      showAll();
+    };
     
+    const setNodeFixPosition = (d) => {
+      d.x = d.fx;
+      d.y = d.fy;
+      const n = d3.select('#' + d.id);
+      n.attr('transform', (nd: any) => {
+        return 'translate(' + nd.x + ',' + nd.y + ')';
+      });
+    };
+
     const ticked = () => {
       this.tickCount++;
       // if (this.tickCount > 250) {
       //   this.simulation.stop();
       // }
-      node.call(updateNode);
-      link.call(updateLink);
-      label.call(updateLable);
+      nodeGroup.call(updateNode);
+      linkGroup.call(updateLink);
+      labelGroup.call(updateLable);
     
     };
     this.ticked = ticked;
@@ -221,7 +266,7 @@ export class AppComponent implements AfterContentInit, OnInit {
         .on('zoom', () => { container.attr('transform', d3.event.transform); })
     );
     
-    const link = container.append('g').attr('class', 'links')
+    const linkGroup = container.append('g').attr('class', 'links')
       .selectAll('line')
       .data(data.links)
       .enter()
@@ -230,25 +275,26 @@ export class AppComponent implements AfterContentInit, OnInit {
       .attr('stroke', '#aaa')
       .attr('stroke-width', '1px');
     
-    const node = container.append('g').attr('class', 'nodes')
+    const nodeGroup = container.append('g').attr('class', 'nodes')
       .selectAll('circle')
       .data(data.nodes)
       .enter()
       .append('circle')
+      .attr('id', (d: any) => d.id)
       .attr('r', 7)
       .style('opacity', normalOpacity)
-      .attr('fill', (d: any) => color(d.group + ''));
+      .attr('fill', (d: any) => this.nodeColors[d.group]);
     
-    node.on('mouseover', focus).on('mouseout', unfocus);
+    nodeGroup.on('mouseover', focus).on('mouseout', unfocus);
     
-    node.call(
+    nodeGroup.call(
       d3.drag()
         .on('start', dragstarted)
-        .on('drag', dragged)
+        .on('drag', dragging)
         .on('end', dragended)
     );
     
-    const label = container.append('g').attr('class', 'labels')
+    const labelGroup = container.append('g').attr('class', 'labels')
       .selectAll('text')
       .data(data.nodes)
       .enter()
@@ -263,17 +309,14 @@ export class AppComponent implements AfterContentInit, OnInit {
       // .attr('display', 'none')
       .style('pointer-events', 'none');
     
-    node.on('mouseover', focus).on('mouseout', unfocus);
+    nodeGroup.on('mouseover', focus).on('mouseout', unfocus);
     
     graphLayout.on('tick', ticked);
   }
 
-  ngAfterContentInit() {
-    this.showCluster();
-  }
-
   stopSimulation() {
     this.simulation.stop();
+    this.simulationStopped = true;
   }
 
   startSimulation() {
@@ -281,6 +324,7 @@ export class AppComponent implements AfterContentInit, OnInit {
     .force('link', d3.forceLink(this.data.links).id((d: any) => d.id ).distance(this.linkDistance).strength(1));
     this.simulation.alpha(0.3);
     this.simulation.alphaTarget(0).restart();
+    this.simulationStopped = false;
   }
 
   ease() {
