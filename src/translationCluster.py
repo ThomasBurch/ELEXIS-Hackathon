@@ -33,6 +33,8 @@ not_allowed_text_list = [
 ]
 
 def build_cluster(cluster, node):
+  """ build cluster using induction
+  """
   for target in node['target']:
     if target not in cluster and target['text'] not in not_allowed_text_list:
       cluster.append(target)
@@ -41,6 +43,40 @@ def build_cluster(cluster, node):
   return cluster
 
 def build_cluster_graph_info(clusters, sort=False, sort_reverse=False):
+  """ create graph info structure like: 
+  [
+    {
+      "nodes": [
+        {
+          "id": "de_40",
+          "text": "sicher",
+          "group": 1
+        },
+        {
+          "id": "akiid_001",
+          "text": "akīd",
+          "group": 0
+        },
+        ...
+      ],
+      "links": [
+        {
+          "source": 0,
+          "source_": "de_40",
+          "target": 1,
+          "target_": "akiid_001"
+        },
+        {
+          "source": 0,
+          "source_": "de_40",
+          "target": 5,
+          "target_": "b_zhaddik_001"
+        },
+        ...
+      ]
+    }
+  ]
+  """
   if sort == True:
     s_clusters = sorted(clusters, key=lambda item : len(item), reverse=True)
   else:
@@ -94,7 +130,7 @@ add_id_to_translations_in_entries(root, 'fr')
 # pp.pprint(text_id_lang_dict)
 
 
-def build_inverted_list(root, lang, sibling_langs):
+def transform_data_in_clusters(root, lang, sibling_langs):
   entry_elems = root.findall('.//tei:div[@type="entries"]/tei:entry', ns)
   entry_dict = {}
   res_dict = {}
@@ -227,7 +263,7 @@ for l in langs:
   for sl in langs:
     if sl != l:
       sibling_langs.append(sl)
-  res_dict, res_list, clusters_graph_info = build_inverted_list(root, l, sibling_langs)
+  res_dict, res_list, clusters_graph_info = transform_data_in_clusters(root, l, sibling_langs)
   clusters_graph_info_list.append(clusters_graph_info)
   cal = {}
   cal_list = []

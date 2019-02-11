@@ -173,7 +173,7 @@ export class AppComponent implements AfterContentInit, OnInit {
     // const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     const focusOpacity = 1;
-    const normalOpacity = 0.6;
+    const normalOpacity = 1;
     const fadeOpacity = 0.1;
 
     const dataLayout = d3.forceSimulation(data.nodes)
