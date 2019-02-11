@@ -1,4 +1,22 @@
-## data cleaning:
+ELEXIS-Hackathon
+====================
+
+Thomas Burch burch@uni-trier.de
+Li Sheng sheng@uni-trier.de
+
+## Presentation:
+
+todo
+
+## How to run it:
+
+todo
+
+## For development:
+
+todo
+
+## Some notes for data cleaning or data errors:
 
 ### 2 translations in entries not in sense-tag:
 
@@ -8,14 +26,15 @@
 
     "mutliWordUnit"
 
-### not understand:
+### possible data errors:
 
-* example sentence has 2 translations with fully different meanings
+* 1 translation is splitted in 2 translations 
 
 ```
 <cit xml:id="claa_qadd_ma_rayyadhtu_wa_laa_habb_yifhim_001" type="example">
   <quote xml:lang="ar-aeb-x-tunis-vicav">ʕlā qadd-ma ṛayyaḏ̣tu wa-lā ḥabb yifhim</quote>
   <bibl>Singer 1984, p. 683</bibl>
+  <!-- should the following two be one translations??? -->
   <cit type="translation" xml:lang="de">
     <quote>So sehr ich ihm auch gut zuredete</quote>
   </cit>
@@ -23,6 +42,38 @@
     <quote>er wollte nicht verstehen.</quote>
   </cit>
 </cit>
+```
+
+```
+
+<entry xml:id="mcayyin_002">
+  <form type="lemma">
+    <orth xml:lang="ar-aeb-x-tunis-vicav">mʕayyin</orth>
+    <bibl>Singer 1984, p. 411</bibl>
+  </form>
+  <!-- ... -->
+  <sense>
+    <cit type="translation" xml:lang="en">
+      <quote>certain</quote>
+    </cit>
+    <cit type="translation" xml:lang="en">
+      <quote>particular</quote>
+    </cit>
+    <cit type="translation" xml:lang="en">
+      <quote>specific</quote>
+    </cit>
+    <cit type="translation" xml:lang="de">
+      <quote>bestimmt</quote>
+    </cit>
+    <!-- should the following two be one translations??? -->
+    <cit type="translation" xml:lang="de">
+      <quote>festgesetzt (Termin</quote>
+    </cit>
+    <cit type="translation" xml:lang="de">
+      <quote>Datum)</quote>
+    </cit>
+  <!-- ... -->
+</entry>
 ```
 
 * entry (or entries), which has repeated translations 
@@ -65,5 +116,39 @@
       <quote/>
     </cit>
   </sense>
+</entry>
+```
+
+* entry (or entries), which has the same gramGrp more than 1 time
+```
+<entry xml:id="shal_001">
+  <form type="lemma">
+    <orth xml:lang="ar-aeb-x-tunis-vicav">shal</orth>
+    <bibl>Ritt-Benmimoun 2014</bibl>
+    <bibl>Singer 1984, p. 111, p. 131, p. 136, p. 335</bibl>
+    <form type="variant">
+      <orth xml:lang="ar-aeb-x-tunis-vicav">sʔal</orth>
+    </form>
+  </form>
+  <gramGrp>
+    <gram type="pos">verb</gram>
+    <gram type="subc">I</gram>
+    <gram type="root" xml:lang="ar-aeb-x-tunis-vicav">sʔl</gram>
+  </gramGrp>
+  <form type="inflected" ana="#v_pres_sg_p3">
+    <orth xml:lang="ar-aeb-x-tunis-vicav">yishal</orth>
+  </form>
+  <form type="inflected" ana="#v_pres_sg_p3">
+    <orth xml:lang="ar-aeb-x-tunis-vicav">yisʔal</orth>
+  </form>
+  <form type="inflected" ana="#v_pres_sg_p3">
+    <orth xml:lang="ar-aeb-x-tunis-vicav">yasʔal</orth>
+  </form>
+  <gramGrp>
+    <gram type="pos">verb</gram>
+    <gram type="subc">I</gram>
+    <gram type="root" xml:lang="ar-aeb-x-tunis-vicav">sʔl</gram>
+  </gramGrp>
+  <!-- ... -->
 </entry>
 ```
