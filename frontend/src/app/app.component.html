@@ -40,12 +40,20 @@
     </div>
     <div id="graphPane">
       <div class="graphControl">
-        <button mat-raised-button class="controlButton" (click)="stopSimulation()">stop</button>
-        <button mat-raised-button class="controlButton" (click)="startSimulation()">start</button>
-        <button mat-raised-button class="controlButton" (click)="ease()">ease graph</button>
-        <button mat-raised-button class="controlButton" (click)="tense()">tense graph</button>
-        <button mat-raised-button class="controlButton" (click)="zoomIn()">zoom in</button>
-        <button mat-raised-button class="controlButton" (click)="zoomOut()">zoom out</button>
+        <div class="buttonControlBlock">
+          <button mat-raised-button class="controlButton" (click)="stopSimulation()">stop</button>
+          <button mat-raised-button class="controlButton" (click)="startSimulation()">start</button>
+          <button mat-raised-button class="controlButton" (click)="ease()">ease graph</button>
+          <button mat-raised-button class="controlButton" (click)="tense()">tense graph</button>
+          <button mat-raised-button class="controlButton" (click)="zoomIn()">zoom in</button>
+          <button mat-raised-button class="controlButton" (click)="zoomOut()">zoom out</button>
+        </div>
+        <div class="minMaxNodesControlBlock">
+          <span class="minMaxNodesText">min nodes: </span>
+          <input type="text" [(ngModel)]="minNodes" (input)="minNodesChange($event)">
+          <span class="minMaxNodesText">max nodes: </span>
+          <input type="text" [(ngModel)]="maxNodes" (input)="maxNodesChange($event)">
+        </div>
       </div>
       <div id="canvas" #canvas></div>
     </div>

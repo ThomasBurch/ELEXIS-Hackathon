@@ -43,8 +43,10 @@ export class AppComponent implements AfterContentInit, OnInit {
   clusterGraph: any[];
   clusterGraphFiltered: any[];
   selectedLang = 'de';
+  minNodesDefault = 6;
+  maxNodesDefault = 500;
   minNodes = 6;
-  maxNodes = 99999;
+  maxNodes = 500;
   clusterFilterInput: string = '>' + (this.minNodes - 1);
 
 
@@ -88,13 +90,15 @@ export class AppComponent implements AfterContentInit, OnInit {
         const p = filter.replace(/^>/, '').trim();
         const num = parseInt(p, 10);
         if (!isNaN(num)) {
-          this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, num + 1, this.maxNodes, '');
+          const fnum = num > this.minNodes ? num : this.minNodes;
+          this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, fnum, this.maxNodes, '');
         }
       } else if (filter.indexOf('<') === 0) {
         const p = filter.replace(/^</, '').trim();
         const num = parseInt(p, 10);
         if (!isNaN(num)) {
-          this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, num, '');
+          const fnum = num < this.minNodes ? num : this.minNodes;
+          this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, fnum, '');
         }
       }  else {
         this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, this.maxNodes, filter);
@@ -152,7 +156,22 @@ export class AppComponent implements AfterContentInit, OnInit {
 
   langTabChange(event: MatTabChangeEvent) {
     this.selectClusterLang(event.tab.textLabel.replace(/ar-/, ''), true);
-  
+  }
+
+  maxNodesChange(event) {
+    const text = event.target.value;
+    if (/^[0-9]+$/.test(text)) {
+      this.maxNodes = parseInt(text, 10);
+      this.filterChange();
+    }
+  }
+
+  minNodesChange(event) {
+    const text = event.target.value;
+    if (/^[0-9]+$/.test(text)) {
+      this.minNodes = parseInt(text, 10);
+      this.filterChange();
+    }
   }
 
   selectCluster(event: MouseEvent, cluster) {
