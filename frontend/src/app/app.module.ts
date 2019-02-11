@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatTabsModule, MatButtonModule, MatInputModule, MatCheckboxModule, MatListModule} from '@angular/material';
+import { MatTabsModule, MatRadioModule, MatButtonModule, MatInputModule, MatCheckboxModule, MatListModule} from '@angular/material';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -21,6 +21,7 @@ import { AppComponent } from './app.component';
     MatTabsModule,
     MatInputModule,
     FormsModule,
+    MatRadioModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

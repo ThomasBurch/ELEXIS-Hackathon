@@ -1,18 +1,18 @@
 import { Component, AfterContentInit, ViewChild, ElementRef } from '@angular/core';
-import { MatSelectionList, MatTabChangeEvent } from '@angular/material';
+import { MatSelectionList, MatTabChangeEvent, MatRadioChange } from '@angular/material';
 
 import { OnInit } from '@angular/core';
 import * as d3 from 'd3';
 
 declare const require: any;
-// const deList = require('../../../data/de_list.json');
-// const enList = require('../../../data/en_list.json');
-// const frList = require('../../../data/fr_list.json');
-// const deGraphInfo = require('../../../data/de_graph.json');
 const deClusterGraphInfo = require('../../../data/de_cluster_graph.json');
 const enClusterGraphInfo = require('../../../data/en_cluster_graph.json');
 const frClusterGraphInfo = require('../../../data/fr_cluster_graph.json');
 const allLangsClusterGraphInfo = require('../../../data/all_langs_cluster_graph.json');
+const deRootClusterGraphInfo = require('../../../data/de_gram_root_cluster_graph.json');
+const enRootClusterGraphInfo = require('../../../data/en_gram_root_cluster_graph.json');
+const frRootClusterGraphInfo = require('../../../data/fr_gram_root_cluster_graph.json');
+const allLangsRootClusterGraphInfo = require('../../../data/all_langs_gram_root_cluster_graph.json');
 
 @Component({
   selector: 'app-root',
@@ -27,6 +27,17 @@ export class AppComponent implements AfterContentInit, OnInit {
   @ViewChild('selectedClusters') 
   selectedClusters: MatSelectionList;
 
+  gramRootRadioText = [
+    'without gram "root"',
+    'with gram "root"',
+  ];
+  gramRootRadioSwitcher = this.gramRootRadioText[0];
+  withoutGramRootData = [deClusterGraphInfo, enClusterGraphInfo, frClusterGraphInfo, allLangsClusterGraphInfo];
+  withGramRootData = [deRootClusterGraphInfo, enRootClusterGraphInfo, frRootClusterGraphInfo, 
+    allLangsRootClusterGraphInfo
+  ];
+  allData: any = {};
+
   data: any = {};
 
   clusterGraph: any[];
@@ -35,6 +46,7 @@ export class AppComponent implements AfterContentInit, OnInit {
   minNodes = 6;
   maxNodes = 99999;
   clusterFilterInput: string = '>' + (this.minNodes - 1);
+
 
   simulation: any;
   simulationStopped = false;
@@ -52,6 +64,8 @@ export class AppComponent implements AfterContentInit, OnInit {
   linkDistanceStep = 0.2;
 
   constructor() {
+    this.allData[this.gramRootRadioText[0]] = this.withoutGramRootData;
+    this.allData[this.gramRootRadioText[1]] = this.withGramRootData;
   }
 
   ngOnInit() {
@@ -113,14 +127,15 @@ export class AppComponent implements AfterContentInit, OnInit {
   selectClusterLang(lang: string, redraw: boolean) {
 
     this.selectedLang = lang;
+    const rootSelectedData = this.allData[this.gramRootRadioSwitcher];
     if (lang === 'de') {
-      this.clusterGraph = deClusterGraphInfo;
+      this.clusterGraph = rootSelectedData[0];
     } else if (lang === 'en') {
-      this.clusterGraph = enClusterGraphInfo;
+      this.clusterGraph = rootSelectedData[1];
     } else if (lang === 'fr') {
-      this.clusterGraph = frClusterGraphInfo;
+      this.clusterGraph = rootSelectedData[2];
     } else if (lang === 'all-langs') {
-      this.clusterGraph = allLangsClusterGraphInfo;
+      this.clusterGraph = rootSelectedData[3];
     }
     this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, this.maxNodes, '');
     this.clusterGraphFiltered[0].selected = true;
@@ -128,6 +143,11 @@ export class AppComponent implements AfterContentInit, OnInit {
     if (redraw) {
       this.showCluster();
     }
+  }
+
+  gramRootChange(event: MatRadioChange) {
+    this.gramRootRadioSwitcher = event.value;
+    this.selectClusterLang(this.selectedLang, true);
   }
 
   langTabChange(event: MatTabChangeEvent) {

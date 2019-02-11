@@ -1,15 +1,25 @@
 <div class="main">
   <div class="tabControl">
-    <mat-tab-group mat-align-tabs="end" (selectedTabChange)="langTabChange($event)">
-      <mat-tab label="ar-de">
-      </mat-tab>
-      <mat-tab label="ar-en">
-      </mat-tab>
-      <mat-tab label="ar-fr">
-      </mat-tab>
-      <mat-tab label="all-langs">
-      </mat-tab>
-    </mat-tab-group>
+    <div class="tabRootRadios">
+      <mat-radio-group>
+        <mat-radio-button *ngFor="let s of gramRootRadioText" [value]="s" 
+          [checked]="s.indexOf('without') >= 0"
+          (change)="gramRootChange($event)"
+        > {{ s }}</mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <div class="tabLangs">
+      <mat-tab-group mat-align-tabs="end" (selectedTabChange)="langTabChange($event)">
+        <mat-tab label="ar-de">
+        </mat-tab>
+        <mat-tab label="ar-en">
+        </mat-tab>
+        <mat-tab label="ar-fr">
+        </mat-tab>
+        <mat-tab label="all-langs">
+        </mat-tab>
+      </mat-tab-group>
+    </div>
   </div>
   <div class="graphMain">
     <div id="lemmalistPane">

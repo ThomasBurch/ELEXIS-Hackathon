@@ -8,7 +8,7 @@ import json
 
 #%%
 import xml.etree.ElementTree as ET
-
+sys.setrecursionlimit(2000)
 pp = pprint.PrettyPrinter(indent=2, width=150)
 
 with open(os.path.join(os.getcwd(), 'data', 'dc_aeb_eng_indented2_minified.xml'), 'r') as xml_file:
@@ -25,6 +25,7 @@ group_lang_map = {
   'de': 1,
   'en': 2,
   'fr': 3,
+  'gram_root': 4,
 }
 
 not_allowed_text_list = [
@@ -129,6 +130,27 @@ add_id_to_translations_in_entries(root, 'en')
 add_id_to_translations_in_entries(root, 'fr')
 # pp.pprint(text_id_lang_dict)
 
+def add_id_to_gram_type_in_entries(root, gram_type):
+  num = 0
+  elems = root.findall('.//tei:div[@type="entries"]/tei:entry//tei:gramGrp/tei:gram[@type="%s"]' % (gram_type), ns)
+  text_dict = {}
+  text_dict_key_id = {}
+  for elem in elems:
+    quote_text = elem.text
+    if quote_text == None:
+      quote_text = ''
+    if quote_text not in text_dict.keys():
+      num += 1
+      elem_id = 'gram_' + gram_type + '_' + str(num)
+      text_dict[quote_text] = elem_id
+    else:
+      elem_id = text_dict[quote_text]
+    elem.set(xml_id_key, elem_id)
+    # break
+  for key in text_dict:
+    text_dict_key_id[text_dict[key]] = key
+  return root
+add_id_to_gram_type_in_entries(root, 'root')
 
 def transform_data_in_clusters(root, lang, sibling_langs):
   entry_elems = root.findall('.//tei:div[@type="entries"]/tei:entry', ns)
@@ -252,6 +274,75 @@ def transform_data_in_clusters(root, lang, sibling_langs):
 
   return res_dict, res_list, clusters_graph_info
 
+def add_gram_type_in_cluster(root, clusters, gram_type):
+  """ add gram type as nodes in clusters
+  """
+  new_clusters = []
+  # create node list
+  node_dict = {}
+  for cluster in clusters:
+    nodes = cluster['nodes']
+    for node in nodes:
+      if node['id'] not in node_dict.keys():
+        node_dict[node['id']] = node
+        node['target'] = []
+        node['in_cluster'] = False
+  # create links in nodes
+  for cluster in clusters:
+    links = cluster['links']
+    for link in links:
+      source_id = link['source_']
+      target_id = link['target_']
+      source_node = node_dict[source_id]
+      target_node = node_dict[target_id]
+      if target_node not in source_node['target']:
+        source_node['target'].append(target_node)
+      if source_node not in target_node['target']:
+        target_node['target'].append(source_node)
+
+  # add gram type in nodes
+  entry_elems = root.findall('.//tei:div[@type="entries"]/tei:entry', ns)
+  for entry in entry_elems:
+    entry_id = entry.attrib[xml_id_key]
+    # check if entry in node list
+    if entry_id not in node_dict.keys():
+      continue
+    # check if entry has the given gram type
+    gram_root_elems = entry.findall('./tei:gramGrp/tei:gram[@type="%s"]' % (gram_type), ns)
+    if gram_root_elems == None or len(gram_root_elems) <= 0:
+      continue
+    for gr_elem in gram_root_elems:
+      gr_text = '' if gr_elem.text == None else gr_elem.text
+      gr_id = gr_elem.attrib[xml_id_key]
+      temp_gram_type_node = {
+      'id': gr_id,
+      'text': gr_text,
+      'target': [],
+      'in_cluster': False,
+      'group': group_lang_map['gram_' + gram_type]
+      }
+      if gr_id not in node_dict.keys():
+        node_dict[gr_id] = temp_gram_type_node
+      target_node = node_dict[entry_id]
+      source_node = node_dict[gr_id]
+      if target_node not in source_node['target']:
+        source_node['target'].append(target_node)
+      if source_node not in target_node['target']:
+        target_node['target'].append(source_node)
+
+  node_list = []
+  for id in node_dict.keys():
+    node_list.append(node_dict[id])
+
+  for node in node_list:
+    if node['in_cluster'] == False and node['text'] not in not_allowed_text_list:
+      new_clusters.append(build_cluster([], node))
+  pp.pprint(len(new_clusters))
+
+  clusters_graph_info = build_cluster_graph_info(new_clusters, sort=True, sort_reverse=True)
+  return clusters_graph_info
+
+
 langs = [
   'de', 
   'en', 
@@ -265,33 +356,39 @@ for l in langs:
       sibling_langs.append(sl)
   res_dict, res_list, clusters_graph_info = transform_data_in_clusters(root, l, sibling_langs)
   clusters_graph_info_list.append(clusters_graph_info)
-  cal = {}
-  cal_list = []
-  for res in res_list:
-    if res['count'] in cal.keys():
-      cal[res['count']]['count'] += 1
-      cal[res['count']]['text_list'] += [res['text']]
-    else:
-      cal[res['count']] = {'count': 1, 'text_list': [res['text']]}
-  for key in cal.keys():
-    cal_list.append(
-      [
-        key, 
-        cal[key]['count'], 
-        ', '.join([('\'' + item + '\'') for item in sorted(cal[key]['text_list'])[0:5]])
-      ]
-    )
-  sorted(cal_list, key=lambda item: item[0], reverse=True)
-  out = l + ' count\tnumber of texts\tfirst 5 texts\n'
-  for item in cal_list:
-    out += str(item[0]) + '\t' + str(item[1]) + '\t' + item[2] + '\n'
+  # # calculate claster nodes connections
+  # cal = {}
+  # cal_list = []
+  # for res in res_list:
+  #   if res['count'] in cal.keys():
+  #     cal[res['count']]['count'] += 1
+  #     cal[res['count']]['text_list'] += [res['text']]
+  #   else:
+  #     cal[res['count']] = {'count': 1, 'text_list': [res['text']]}
+  # for key in cal.keys():
+  #   cal_list.append(
+  #     [
+  #       key, 
+  #       cal[key]['count'], 
+  #       ', '.join([('\'' + item + '\'') for item in sorted(cal[key]['text_list'])[0:5]])
+  #     ]
+  #   )
+  # sorted(cal_list, key=lambda item: item[0], reverse=True)
+  # out = l + ' count\tnumber of texts\tfirst 5 texts\n'
+  # for item in cal_list:
+  #   out += str(item[0]) + '\t' + str(item[1]) + '\t' + item[2] + '\n'
   # print(out)
+  # # save graph data to file
   # with open(os.path.join(os.getcwd(), 'data', l + '_list.json'), 'w', encoding='utf8') as f:
   #   data = json.dumps(res_list, indent=2, ensure_ascii=False)
   #   f.write(data)
-  with open(os.path.join(os.getcwd(), 'data', l + '_cluster_graph.json'), 'w', encoding='utf8') as f:
-    data = json.dumps(clusters_graph_info, indent=2, ensure_ascii=False)
-    f.write(data)
+  # with open(os.path.join(os.getcwd(), 'data', l + '_cluster_graph.json'), 'w', encoding='utf8') as f:
+  #   data = json.dumps(clusters_graph_info, indent=2, ensure_ascii=False)
+  #   f.write(data)
+  # clusters_gram_type_graph_info = add_gram_type_in_cluster(root, clusters_graph_info, 'root')
+  # with open(os.path.join(os.getcwd(), 'data', l + '_gram_root_cluster_graph.json'), 'w', encoding='utf8') as f:
+  #   data = json.dumps(clusters_gram_type_graph_info, indent=2, ensure_ascii=False)
+  #   f.write(data)
   # break
 
 ## create cluster_graph with all the langs
@@ -336,6 +433,14 @@ pp.pprint('for all langs, not in cluster: ' + str(not_in_cluster_count))
 
 clusters_graph_all_info = build_cluster_graph_info(clusters_all, sort=True, sort_reverse=True)
 
-with open(os.path.join(os.getcwd(), 'data', 'all_langs_cluster_graph.json'), 'w', encoding='utf8') as f:
-  data = json.dumps(clusters_graph_all_info, indent=2, ensure_ascii=False)
+# # save graph data with all langs to file
+# with open(os.path.join(os.getcwd(), 'data', 'all_langs_cluster_graph.json'), 'w', encoding='utf8') as f:
+#   data = json.dumps(clusters_graph_all_info, indent=2, ensure_ascii=False)
+#   f.write(data)
+
+clusters_gram_type_graph_info = add_gram_type_in_cluster(root, clusters_graph_all_info, 'root')
+with open(os.path.join(os.getcwd(), 'data', 'all_langs_gram_root_cluster_graph.json'), 'w', encoding='utf8') as f:
+  data = json.dumps(clusters_gram_type_graph_info, indent=2, ensure_ascii=False)
   f.write(data)
+
+

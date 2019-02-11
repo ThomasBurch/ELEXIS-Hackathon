@@ -10,8 +10,23 @@ $tabControlH: 30px;
 
 }
 .tabControl {
-  width: 100%;
+  display: flex;
+  flex-direction: row;
   height: $tabControlH;
+
+  .tabRootRadios {
+    width: 50%;
+    color: darkgreen;
+    padding-top: 5px;
+    padding-left: 5px;
+
+    .mat-radio-button ~ .mat-radio-button {
+      margin-left: 16px;
+    }
+  }
+  .tabLangs {
+    flex-grow: 1;
+  }
   
 }
 .graphMain {
