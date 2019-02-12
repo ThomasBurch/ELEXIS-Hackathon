@@ -76,6 +76,8 @@ todo
 </entry>
 ```
 
+* dummy translations such as empty string or '-' are not considered. 
+
 * entry (or entries), which has repeated translations 
 
 ```
