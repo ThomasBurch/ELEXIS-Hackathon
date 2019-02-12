@@ -55,6 +55,10 @@ $textListPaneW: 180px;
   .listPane {
     margin-top: 5px;
     margin-right: 5px;
+
+    mat-list {
+      padding-top: 0px;
+    }
   }
 
   #clusterListPane {
