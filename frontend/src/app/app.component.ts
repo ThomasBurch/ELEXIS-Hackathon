@@ -52,9 +52,9 @@ export class AppComponent implements AfterContentInit, OnInit {
   clusterGraph: any[];
   clusterGraphFiltered: any[];
   selectedLang = 'de';
-  minNodesDefault = 6;
+  minNodesDefault = 20;
   maxNodesDefault = 500;
-  minNodes = 6;
+  minNodes = 20;
   maxNodes = 500;
   clusterFilterInput: string = '>' + (this.minNodes - 1);
   nodeTextFilterInput = ' ';
@@ -294,7 +294,6 @@ export class AppComponent implements AfterContentInit, OnInit {
   }
 
   onlyShowNeighborsAndSelf(d) {
-    console.log(d);
     const tempIndex = d.index;
     this.graphElems.nodeGroup.style('cursor', (o: any) => {
       return tempIndex === o.index ? 'pointer' : 'default';

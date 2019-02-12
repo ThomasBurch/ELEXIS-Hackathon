@@ -24,7 +24,7 @@
   <div class="graphMain">
     <div id="clusterListPane" class="listPane">
       <mat-form-field class="filter-form-field">
-        <input matInput placeholder="Cluster filter (number or text of nodes)" 
+        <input matInput placeholder="Cluster filter by number or text:" 
           [(ngModel)]="clusterFilterInput"
           (input)="clusterFilterChange()"
         >
@@ -42,7 +42,7 @@
     </div>
     <div id="lemmalistPane" class="listPane">
       <mat-form-field class="filter-form-field">
-        <input matInput placeholder="Nodes in selected cluster:" 
+        <input matInput placeholder="Texts in selected cluster:" 
           [(ngModel)]="nodeTextFilterInput"
           (input)="nodeTextFilterChange()"
         >

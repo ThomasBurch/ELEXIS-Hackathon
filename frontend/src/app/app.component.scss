@@ -1,7 +1,8 @@
 
 $space: 2px;
 $tabControlH: 30px;
-$listPaneW: 180px;
+$clusterListPaneW: 200px;
+$textListPaneW: 180px;
 
 .main {
   // margin: 2px 2px 2px 2px;
@@ -57,8 +58,8 @@ $listPaneW: 180px;
   }
 
   #clusterListPane {
-    min-width: $listPaneW;
-    max-width: $listPaneW;
+    min-width: $clusterListPaneW;
+    max-width: $clusterListPaneW;
 
     mat-list-option:hover {
       background-color: cadetblue;
@@ -66,8 +67,8 @@ $listPaneW: 180px;
   }
 
   #lemmalistPane {
-    min-width: $listPaneW;
-    max-width: $listPaneW;
+    min-width: $textListPaneW;
+    max-width: $textListPaneW;
     mat-list-item:hover {
       background-color: darkcyan;
       cursor: pointer;
