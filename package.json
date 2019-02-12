@@ -1,12 +1,8 @@
 {
   "name": "hackathon",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
-  "dependencies": {
-    "fast-xml-parser": "^3.12.12",
-    "he": "^1.2.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "nodemon": "^1.18.9"
   }
