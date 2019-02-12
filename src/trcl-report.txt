@@ -1,2 +1,0 @@
-{'group': 0, 'id': 'xyaar_001', 'in_cluster': False, 'target': [], 'text': 'xyāṛ'}
-{'group': 0, 'id': 'xitaam_001', 'in_cluster': False, 'target': [], 'text': 'xitām'}
