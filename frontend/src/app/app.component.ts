@@ -39,6 +39,15 @@ export class AppComponent implements AfterContentInit, OnInit {
   allData: any = {};
 
   data: any = {};
+  
+  groupLangsMap = {
+    0: 'ar',
+    1: 'de',
+    2: 'fr',
+    3: 'root',
+  };
+
+  lemmaList: any[] = [];
 
   clusterGraph: any[];
   clusterGraphFiltered: any[];
@@ -48,22 +57,46 @@ export class AppComponent implements AfterContentInit, OnInit {
   minNodes = 6;
   maxNodes = 500;
   clusterFilterInput: string = '>' + (this.minNodes - 1);
+  nodeTextFilterInput = ' ';
 
 
-  simulation: any;
   simulationStopped = false;
-  dataLayout: any;
   nodeColors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
-  zoom: any;
-  svg: any;
+  graphElems: {
+    zoom: any;
+    svg: any;
+    container: any;
+    simulation: any;
+    dataLayout: any;
+    nodeGroup: any;
+    labelGroup: any;
+    linkGroup: any;
+    neighborsList: any[];
+  } = {
+    zoom: null,
+    svg: null,
+    container: null,
+    simulation: null,
+    dataLayout: null,
+    nodeGroup: null,
+    labelGroup: null,
+    linkGroup: null,
+    neighborsList: []
+  };
   ticked: any;
   tickCount = 0;
-  zoomFactor = 1;
-  zoomStep = 0.2;
-  nodeCharge = -1000;
-  linkDistance = 5;
-  nodeChargeStep = 500;
-  linkDistanceStep = 0.2;
+  graphSettings = {
+    zoomFactor: 1,
+    zoomStep: 0.2,
+    nodeCharge: -1000,
+    linkDistance: 5,
+    nodeChargeStep: 500,
+    linkDistanceStep: 0.2,
+
+    focusOpacity: 1,
+    normalOpacity: 1,
+    fadeOpacity: 0.1,
+  };
 
   constructor() {
     this.allData[this.gramRootRadioText[0]] = this.withoutGramRootData;
@@ -78,7 +111,43 @@ export class AppComponent implements AfterContentInit, OnInit {
     this.selectClusterLang('de', true);
   }
 
-  filterChange() {
+  getLangsByGroup(group: number) {
+    return this.groupLangsMap[group];
+  }
+
+  mouseoverLemmaItem(lemmaItem) {
+    this.onlyShowNeighborsAndSelf(lemmaItem.node);
+  }
+
+  mouseoutLemmaItem() {
+    this.showAllNodes();
+  }
+
+  clickLemmaItem(lemmaItem) {
+    // not working perfectly
+    // const x = lemmaItem.node.x;
+    // const y = lemmaItem.node.y;
+    // const svgBbox = this.graphElems.svg.node().getBBox();
+    // const centerX = svgBbox.x + svgBbox.width / 2;
+    // const centerY = svgBbox.y + svgBbox.height / 2;
+    // this.graphElems.container.attr('transform', 'translate(' + (centerX - x) + ',' + (centerY - y) + ')');
+
+    // // zoom reset
+    // this.graphSettings.zoomFactor = 1;
+  }
+
+  nodeTextFilterChange() {
+    const filter = this.nodeTextFilterInput.trim();
+    for (const l of this.lemmaList) {
+      if (l.node.text.indexOf(filter) > -1) {
+        l.showed = true;
+      } else {
+        l.showed = false;
+      }
+    }
+  }
+
+  clusterFilterChange() {
     const filter = this.clusterFilterInput;
     if (/^[0-9]+$/g.test(filter)) {
       const num = parseInt(filter, 10);
@@ -144,8 +213,8 @@ export class AppComponent implements AfterContentInit, OnInit {
     this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, this.maxNodes, '');
     if (this.clusterGraphFiltered && this.clusterGraphFiltered.length > 0) {
       this.clusterGraphFiltered[0].selected = true;
+      // this.clusterGraphFiltered[this.clusterGraphFiltered.length - 1].selected = true;
     }
-    // this.clusterGraphFiltered[this.clusterGraphFiltered.length - 1].selected = true;
     if (redraw) {
       this.showCluster();
     }
@@ -164,7 +233,7 @@ export class AppComponent implements AfterContentInit, OnInit {
     const text = event.target.value;
     if (/^[0-9]+$/.test(text)) {
       this.maxNodes = parseInt(text, 10);
-      this.filterChange();
+      this.clusterFilterChange();
     }
   }
 
@@ -172,7 +241,7 @@ export class AppComponent implements AfterContentInit, OnInit {
     const text = event.target.value;
     if (/^[0-9]+$/.test(text)) {
       this.minNodes = parseInt(text, 10);
-      this.filterChange();
+      this.clusterFilterChange();
     }
   }
 
@@ -191,10 +260,77 @@ export class AppComponent implements AfterContentInit, OnInit {
   }
 
   removeGraph() {
-    if (this.svg) {
-      this.simulation.stop();
-      this.svg.remove();
+    if (this.graphElems.svg) {
+      this.graphElems.simulation.stop();
+      this.graphElems.svg.remove();
     }
+  }
+
+  createLemmaList(nodes) {
+    const list = [];
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      list.push({
+        node: n,
+        index: i,
+        showed: true,
+      });
+    }
+    this.lemmaList = list.sort((a, b) => {
+      if (a.node.group > b.node.group) {
+        return 1;
+      } else if (a.node.group < b.node.group) {
+        return -1;
+      } else {
+        if (a.node.text > b.node.text) {
+          return 1;
+        } else if (a.node.text < b.node.text) {
+          return -1;
+        } else {
+          return 0;
+        }
+      }
+    });
+  }
+
+  onlyShowNeighborsAndSelf(d) {
+    console.log(d);
+    const tempIndex = d.index;
+    this.graphElems.nodeGroup.style('cursor', (o: any) => {
+      return tempIndex === o.index ? 'pointer' : 'default';
+    });
+    this.graphElems.nodeGroup.style('opacity', (o: any) => {
+      return this.checkNeighbour(tempIndex, o.index) ? this.graphSettings.focusOpacity : this.graphSettings.normalOpacity;
+    });
+    this.graphElems.nodeGroup.attr('r', (o: any) => {
+      return this.checkNeighbour(tempIndex, o.index) ? 10 : 7;
+    });
+    this.graphElems.labelGroup.style('opacity', (o: any) => {
+      return this.checkNeighbour(tempIndex, o.index) ? this.graphSettings.focusOpacity : this.graphSettings.fadeOpacity;
+    });
+    this.graphElems.labelGroup.style('font-weight', (o: any) => {
+      return this.checkNeighbour(tempIndex, o.index) ? '700' : 'normal';
+    });
+    this.graphElems.labelGroup.style('font-size', (o: any) => {
+      return this.checkNeighbour(tempIndex, o.index) ? 14 : 12;
+    });
+    this.graphElems.linkGroup.style('opacity', (o: any) => {
+      return o.source.index === tempIndex || o.target.index === tempIndex ? 
+        this.graphSettings.focusOpacity : this.graphSettings.normalOpacity;
+    });
+  }
+
+  showAllNodes() {
+    this.graphElems.nodeGroup.style('opacity', this.graphSettings.normalOpacity);
+    this.graphElems.nodeGroup.attr('r', 7);
+    this.graphElems.labelGroup.style('opacity', this.graphSettings.normalOpacity);
+    this.graphElems.labelGroup.style('font-size', 12);
+    this.graphElems.labelGroup.style('font-weight', 'normal');
+    this.graphElems.linkGroup.style('opacity', this.graphSettings.normalOpacity);
+  }
+
+  checkNeighbour(index1: number, index2: number) {
+    return index1 === index2 || this.graphElems.neighborsList[index1 + '-' + index2];
   }
 
   showCluster() {
@@ -205,41 +341,34 @@ export class AppComponent implements AfterContentInit, OnInit {
     }
     const cluster = selectedClusters[0];
     this.data.nodes = cluster.nodes;
+    this.createLemmaList(this.data.nodes);
     this.data.links = cluster.links;
     const data = this.data;
-    // console.log(data);
 
     const width = this.canvas.nativeElement.clientWidth;
     const height = this.canvas.nativeElement.clientHeight;
-    // const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-    const focusOpacity = 1;
-    const normalOpacity = 1;
-    const fadeOpacity = 0.1;
 
     const dataLayout = d3.forceSimulation(data.nodes)
-      .force('charge', d3.forceManyBody().strength(this.nodeCharge))
+      .force('charge', d3.forceManyBody().strength(this.graphSettings.nodeCharge))
       .force('link', d3.forceLink(data.links).distance(3).strength(1));
     
     const graphLayout = d3.forceSimulation(data.nodes)
-      .force('charge', d3.forceManyBody().strength(this.nodeCharge))
+      .force('charge', d3.forceManyBody().strength(this.graphSettings.nodeCharge))
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force('x', d3.forceX(width / 2).strength(1))
       .force('y', d3.forceY(height / 2).strength(1))
-      .force('link', d3.forceLink(data.links).id((d: any) => d.id ).distance(this.linkDistance).strength(1))
+      .force('link', d3.forceLink(data.links).id((d: any) => d.id ).distance(this.graphSettings.linkDistance).strength(1))
       ;
-    this.simulation = graphLayout;
+    this.graphElems.simulation = graphLayout;
     
     const neighborsList = [];
+    this.graphElems.neighborsList = neighborsList;
 
     data.links.forEach((d) => {
       neighborsList[d.source.index + '-' + d.target.index] = true;
       neighborsList[d.target.index + '-' + d.source.index] = true;
     });
-    
-    const checkNeighor = (a, b) => {
-      return a === b || neighborsList[a + '-' + b];
-    };
+
     const fixna = (x) => {
       if (isFinite(x)) {
         return x;
@@ -247,50 +376,12 @@ export class AppComponent implements AfterContentInit, OnInit {
       return 0;
     };
 
-    const onlyShowNeighborsAndSelf = (d) => {
-      const tempIndex = d.index;
-      nodeGroup.style('cursor', (o: any) => {
-        return tempIndex === o.index ? 'pointer' : 'default';
-      });
-      nodeGroup.style('opacity', (o: any) => {
-        return checkNeighor(tempIndex, o.index) ? focusOpacity : normalOpacity;
-      });
-      nodeGroup.attr('r', (o: any) => {
-        return checkNeighor(tempIndex, o.index) ? 10 : 7;
-      });
-      labelGroup.style('opacity', (o: any) => {
-        return checkNeighor(tempIndex, o.index) ? focusOpacity : fadeOpacity;
-      });
-      labelGroup.style('font-weight', (o: any) => {
-        return checkNeighor(tempIndex, o.index) ? '700' : 'normal';
-      });
-      labelGroup.style('font-size', (o: any) => {
-        return checkNeighor(tempIndex, o.index) ? 14 : 12;
-      });
-      // label.attr('display', (o: any) => {
-      //   return checkNeighor(tempIndex, o.index) ? 'block' : 'none';
-      // });
-      linkGroup.style('opacity', (o: any) => {
-        return o.source.index === tempIndex || o.target.index === tempIndex ? focusOpacity : normalOpacity;
-      });
-    };
-    const showAll = () => {
-      // label.attr('display', 'block');
-      // label.attr('display', 'none');
-      nodeGroup.style('opacity', normalOpacity);
-      nodeGroup.attr('r', 7);
-      labelGroup.style('opacity', normalOpacity);
-      labelGroup.style('font-size', 12);
-      labelGroup.style('font-weight', 'normal');
-      linkGroup.style('opacity', normalOpacity);
-    };
-
     const focus = (d) => {
-      onlyShowNeighborsAndSelf(d);
+      this.onlyShowNeighborsAndSelf(d);
     };
     
     const unfocus = () => {
-      showAll();
+      this.showAllNodes();
     };
     
     const updateLink = (ulink: any) => {
@@ -327,11 +418,11 @@ export class AppComponent implements AfterContentInit, OnInit {
       d.fx = d.x + d3.event.dx;
       d.fy = d.y + d3.event.dy;
       // setNodeFixPosition(d);
-      onlyShowNeighborsAndSelf(d);
+      this.onlyShowNeighborsAndSelf(d);
     };
     
     const dragended = (d) => {
-      showAll();
+      this.showAllNodes();
     };
     
     const setNodeFixPosition = (d) => {
@@ -357,9 +448,10 @@ export class AppComponent implements AfterContentInit, OnInit {
     
     const svg = d3.select('#canvas').append('svg').attr('width', width).attr('height', height);
     const container = svg.append('g');
-    this.svg = svg;
+    this.graphElems.svg = svg;
+    this.graphElems.container = container;
     svg.call(
-      this.zoom = d3.zoom()
+      this.graphElems.zoom = d3.zoom()
         .scaleExtent([.1, 4])
         .on('zoom', () => { container.attr('transform', d3.event.transform); })
     );
@@ -369,9 +461,10 @@ export class AppComponent implements AfterContentInit, OnInit {
       .data(data.links)
       .enter()
       .append('line')
-      .style('opacity', normalOpacity)
+      .style('opacity', this.graphSettings.normalOpacity)
       .attr('stroke', '#aaa')
       .attr('stroke-width', '1px');
+    this.graphElems.linkGroup = linkGroup;
     
     const nodeGroup = container.append('g').attr('class', 'nodes')
       .selectAll('circle')
@@ -380,7 +473,7 @@ export class AppComponent implements AfterContentInit, OnInit {
       .append('circle')
       .attr('id', (d: any) => d.id)
       .attr('r', 7)
-      .style('opacity', normalOpacity)
+      .style('opacity', this.graphSettings.normalOpacity)
       .attr('fill', (d: any) => this.nodeColors[d.group]);
     
     nodeGroup.on('mouseover', focus).on('mouseout', unfocus);
@@ -391,6 +484,7 @@ export class AppComponent implements AfterContentInit, OnInit {
         .on('drag', dragging)
         .on('end', dragended)
     );
+    this.graphElems.nodeGroup = nodeGroup;
     
     const labelGroup = container.append('g').attr('class', 'labels')
       .selectAll('text')
@@ -403,56 +497,55 @@ export class AppComponent implements AfterContentInit, OnInit {
       .style('font-size', 12)
       .style('font-family', 'Sans')
       .style('font-weight', 'normal')
-      .style('opacity', normalOpacity)
+      .style('opacity', this.graphSettings.normalOpacity)
       // .attr('display', 'none')
       .style('pointer-events', 'none');
+    this.graphElems.labelGroup = labelGroup;
     
-    nodeGroup.on('mouseover', focus).on('mouseout', unfocus);
+    this.graphElems.labelGroup = labelGroup;
     
     graphLayout.on('tick', ticked);
   }
 
   stopSimulation() {
-    this.simulation.stop();
+    this.graphElems.simulation.stop();
     this.simulationStopped = true;
   }
 
   startSimulation() {
-    this.simulation.force('charge', d3.forceManyBody().strength(this.nodeCharge))
-    .force('link', d3.forceLink(this.data.links).id((d: any) => d.id ).distance(this.linkDistance).strength(1));
-    this.simulation.alpha(0.3);
-    this.simulation.alphaTarget(0).restart();
+    this.graphElems.simulation.force('charge', d3.forceManyBody().strength(this.graphSettings.nodeCharge))
+    .force('link', d3.forceLink(this.data.links).id((d: any) => d.id ).distance(this.graphSettings.linkDistance).strength(1));
+    this.graphElems.simulation.alpha(0.3);
+    this.graphElems.simulation.alphaTarget(0).restart();
     this.simulationStopped = false;
   }
 
   ease() {
-    this.nodeCharge -= this.nodeChargeStep;
-    this.linkDistance += this.linkDistanceStep;
-    console.log(this.nodeCharge, this.linkDistance);
+    this.graphSettings.nodeCharge -= this.graphSettings.nodeChargeStep;
+    this.graphSettings.linkDistance += this.graphSettings.linkDistanceStep;
     this.startSimulation();
   }
 
   tense() {
-    if (this.nodeCharge >= 0) {
-      this.nodeCharge = -500;
+    if (this.graphSettings.nodeCharge >= 0) {
+      this.graphSettings.nodeCharge = -500;
       return;
     }
-    this.nodeCharge += this.nodeChargeStep;
-    this.linkDistance -= this.linkDistanceStep;
-    console.log(this.nodeCharge, this.linkDistance);
+    this.graphSettings.nodeCharge += this.graphSettings.nodeChargeStep;
+    this.graphSettings.linkDistance -= this.graphSettings.linkDistanceStep;
     this.startSimulation();
   }
 
   zoomIn() {
-    this.zoomFactor += this.zoomStep;
-    this.zoomFactor = this.zoomFactor > 4 ? 4 : this.zoomFactor;
-    this.zoom.scaleTo(this.svg, this.zoomFactor);
+    this.graphSettings.zoomFactor += this.graphSettings.zoomStep;
+    this.graphSettings.zoomFactor = this.graphSettings.zoomFactor > 4 ? 4 : this.graphSettings.zoomFactor;
+    this.graphElems.zoom.scaleTo(this.graphElems.svg, this.graphSettings.zoomFactor);
   }
 
   zoomOut() {
-    this.zoomFactor -= this.zoomStep;
-    this.zoomFactor = this.zoomFactor < 0.2 ? 0.2 : this.zoomFactor;
-    this.zoom.scaleTo(this.svg, this.zoomFactor);
+    this.graphSettings.zoomFactor -= this.graphSettings.zoomStep;
+    this.graphSettings.zoomFactor = this.graphSettings.zoomFactor < 0.2 ? 0.2 : this.graphSettings.zoomFactor;
+    this.graphElems.zoom.scaleTo(this.graphElems.svg, this.graphSettings.zoomFactor);
   }
 
 }

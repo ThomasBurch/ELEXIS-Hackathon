@@ -1,6 +1,7 @@
 
 $space: 2px;
 $tabControlH: 30px;
+$listPaneW: 180px;
 
 .main {
   // margin: 2px 2px 2px 2px;
@@ -9,6 +10,18 @@ $tabControlH: 30px;
   height: calc(100% - #{$space} * 2);
 
 }
+
+.selectionList {
+  height: calc(100% - 0.4375em * 2 - 0.84375em - 1.25em - 20px);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+}
+
+.filter-form-field {
+  width: calc(100% - 20px);
+}
+
 .tabControl {
   display: flex;
   flex-direction: row;
@@ -20,34 +33,55 @@ $tabControlH: 30px;
     padding-top: 5px;
     padding-left: 5px;
 
+    .mat-radio-group {
+      float: right;
+    }
     .mat-radio-button ~ .mat-radio-button {
       margin-left: 16px;
     }
   }
+
   .tabLangs {
     flex-grow: 1;
   }
-  
 }
+
 .graphMain {
   display: flex;
   flex-direction: row;
   height: calc(100% - #{$tabControlH});
 
-  #lemmalistPane {
-    min-width: 220px;
-    // background-color: cadetblue;
-    overflow: auto;
+  .listPane {
+    margin-top: 5px;
+    margin-right: 5px;
+  }
 
-    .filter-form-field {
-      width: 100%;
+  #clusterListPane {
+    min-width: $listPaneW;
+    max-width: $listPaneW;
+
+    mat-list-option:hover {
+      background-color: cadetblue;
     }
   }
+
+  #lemmalistPane {
+    min-width: $listPaneW;
+    max-width: $listPaneW;
+    mat-list-item:hover {
+      background-color: darkcyan;
+      cursor: pointer;
+    }
+
+    .hideLemmaItem {
+      display: none;
+    }
+  }
+
   #graphPane {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    margin-left: 5px;
     
     .graphControl{
       margin-top: 10px;
@@ -57,12 +91,14 @@ $tabControlH: 30px;
 
       .buttonControlBlock {
         flex-grow: 1;
+
         .controlButton {
           height: 20px;
           line-height: 20px !important;
           margin-right: 2px;
         }
       }
+
       .minMaxNodesControlBlock {
         .minMaxNodesText {
           margin-left: 10px;
@@ -71,11 +107,13 @@ $tabControlH: 30px;
           padding-bottom: 2px;
           font-size: 12px;
         }
+
         input {
           max-width: 70px;
         }
       }
     }
+
     #canvas {
       flex-grow: 1;
       border: 1px solid green;

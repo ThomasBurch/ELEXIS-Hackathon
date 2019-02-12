@@ -22,21 +22,42 @@
     </div>
   </div>
   <div class="graphMain">
-    <div id="lemmalistPane">
+    <div id="clusterListPane" class="listPane">
       <mat-form-field class="filter-form-field">
         <input matInput placeholder="Cluster filter (number or text of nodes)" 
           [(ngModel)]="clusterFilterInput"
-          (input)="filterChange()"
+          (input)="clusterFilterChange()"
         >
       </mat-form-field>
-      <mat-selection-list dense #selectedClusters>
-        <mat-list-option caption dense *ngFor="let cluster of clusterGraphFiltered"
-          [selected]="cluster.selected"
-          (click)="selectCluster($event, cluster)"
+      <div class="selectionList">
+        <mat-selection-list dense #selectedClusters>
+          <mat-list-option caption dense *ngFor="let cluster of clusterGraphFiltered"
+            [selected]="cluster.selected"
+            (click)="selectCluster($event, cluster)"
+          >
+            {{ (clusterGraphFiltered.indexOf(cluster) + 1) + ': ' + cluster.nodes.length + ' nodes' }}
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </div>
+    <div id="lemmalistPane" class="listPane">
+      <mat-form-field class="filter-form-field">
+        <input matInput placeholder="Nodes in selected cluster:" 
+          [(ngModel)]="nodeTextFilterInput"
+          (input)="nodeTextFilterChange()"
         >
-          {{ (clusterGraphFiltered.indexOf(cluster) + 1) + ': ' + cluster.nodes.length + ' nodes' }}
-        </mat-list-option>
-      </mat-selection-list>
+      </mat-form-field>
+      <div class="selectionList">
+        <mat-list>
+          <mat-list-item *ngFor="let l of lemmaList" [class.hideLemmaItem]="!l.showed" 
+            (click)="clickLemmaItem(l)"
+            (mouseover)="mouseoverLemmaItem(l)"
+            (mouseout)="mouseoutLemmaItem()"
+          > 
+            {{ getLangsByGroup(l.node.group) + ': ' + l.node.text }} 
+          </mat-list-item>
+        </mat-list>
+      </div>
     </div>
     <div id="graphPane">
       <div class="graphControl">
