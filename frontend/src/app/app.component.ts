@@ -142,7 +142,9 @@ export class AppComponent implements AfterContentInit, OnInit {
       this.clusterGraph = rootSelectedData[3];
     }
     this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, this.maxNodes, '');
-    this.clusterGraphFiltered[0].selected = true;
+    if (this.clusterGraphFiltered && this.clusterGraphFiltered.length > 0) {
+      this.clusterGraphFiltered[0].selected = true;
+    }
     // this.clusterGraphFiltered[this.clusterGraphFiltered.length - 1].selected = true;
     if (redraw) {
       this.showCluster();
