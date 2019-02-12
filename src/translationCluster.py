@@ -79,7 +79,7 @@ def build_cluster_graph_info(clusters, sort=False, sort_reverse=False):
   ]
   """
   if sort == True:
-    s_clusters = sorted(clusters, key=lambda item : len(item), reverse=True)
+    s_clusters = sorted(clusters, key=lambda item : len(item), reverse=sort_reverse)
   else:
     s_clusters = clusters
   clusters_graph = []
@@ -270,7 +270,7 @@ def transform_data_in_clusters(root, lang, sibling_langs):
       not_in_cluster_count += 1
   pp.pprint(lang + ' not in cluster: ' + str(not_in_cluster_count))
 
-  clusters_graph_info = build_cluster_graph_info(clusters, sort=True, sort_reverse=True)
+  clusters_graph_info = build_cluster_graph_info(clusters, sort=True, sort_reverse=False)
 
   return res_dict, res_list, clusters_graph_info
 
@@ -339,7 +339,7 @@ def add_gram_type_in_cluster(root, clusters, gram_type):
       new_clusters.append(build_cluster([], node))
   pp.pprint(len(new_clusters))
 
-  clusters_graph_info = build_cluster_graph_info(new_clusters, sort=True, sort_reverse=True)
+  clusters_graph_info = build_cluster_graph_info(new_clusters, sort=True, sort_reverse=False)
   return clusters_graph_info
 
 
@@ -382,13 +382,13 @@ for l in langs:
   # with open(os.path.join(os.getcwd(), 'data', l + '_list.json'), 'w', encoding='utf8') as f:
   #   data = json.dumps(res_list, indent=2, ensure_ascii=False)
   #   f.write(data)
-  # with open(os.path.join(os.getcwd(), 'data', l + '_cluster_graph.json'), 'w', encoding='utf8') as f:
-  #   data = json.dumps(clusters_graph_info, indent=2, ensure_ascii=False)
-  #   f.write(data)
-  # clusters_gram_type_graph_info = add_gram_type_in_cluster(root, clusters_graph_info, 'root')
-  # with open(os.path.join(os.getcwd(), 'data', l + '_gram_root_cluster_graph.json'), 'w', encoding='utf8') as f:
-  #   data = json.dumps(clusters_gram_type_graph_info, indent=2, ensure_ascii=False)
-  #   f.write(data)
+  with open(os.path.join(os.getcwd(), 'data', l + '_cluster_graph.json'), 'w', encoding='utf8') as f:
+    data = json.dumps(clusters_graph_info, indent=2, ensure_ascii=False)
+    f.write(data)
+  clusters_gram_type_graph_info = add_gram_type_in_cluster(root, clusters_graph_info, 'root')
+  with open(os.path.join(os.getcwd(), 'data', l + '_gram_root_cluster_graph.json'), 'w', encoding='utf8') as f:
+    data = json.dumps(clusters_gram_type_graph_info, indent=2, ensure_ascii=False)
+    f.write(data)
   # break
 
 ## create cluster_graph with all the langs
@@ -431,12 +431,12 @@ for node in node_list:
     not_in_cluster_count += 1
 pp.pprint('for all langs, not in cluster: ' + str(not_in_cluster_count))
 
-clusters_graph_all_info = build_cluster_graph_info(clusters_all, sort=True, sort_reverse=True)
+clusters_graph_all_info = build_cluster_graph_info(clusters_all, sort=True, sort_reverse=False)
 
-# # save graph data with all langs to file
-# with open(os.path.join(os.getcwd(), 'data', 'all_langs_cluster_graph.json'), 'w', encoding='utf8') as f:
-#   data = json.dumps(clusters_graph_all_info, indent=2, ensure_ascii=False)
-#   f.write(data)
+# save graph data with all langs to file
+with open(os.path.join(os.getcwd(), 'data', 'all_langs_cluster_graph.json'), 'w', encoding='utf8') as f:
+  data = json.dumps(clusters_graph_all_info, indent=2, ensure_ascii=False)
+  f.write(data)
 
 clusters_gram_type_graph_info = add_gram_type_in_cluster(root, clusters_graph_all_info, 'root')
 with open(os.path.join(os.getcwd(), 'data', 'all_langs_gram_root_cluster_graph.json'), 'w', encoding='utf8') as f:
