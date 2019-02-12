@@ -122,6 +122,7 @@ todo
 ```
 
 * entry (or entries), which has the same gramGrp more than 1 time
+
 ```
 <entry xml:id="shal_001">
   <form type="lemma">
@@ -151,6 +152,55 @@ todo
     <gram type="subc">I</gram>
     <gram type="root" xml:lang="ar-aeb-x-tunis-vicav">sʔl</gram>
   </gramGrp>
+  <!-- ... -->
+</entry>
+```
+
+* over 2000 entries, which have more than 1 en-, de- and fr-translations in one "sense"
+
+```
+//tei:div[@type="entries"]/tei:entry[count(./tei:sense[count(./tei:cit[@type="translation" and @xml:lang="de"]) > 1 and count(./tei:cit[@type="translation" and @xml:lang="en"]) > 1  and count(./tei:cit[@type="translation" and @xml:lang="en"]) > 1]) > 0]
+```
+
+example:
+```
+<entry xmlns="http://www.tei-c.org/ns/1.0" xml:id="ibliis_001">
+  <form type="lemma">
+    <orth xml:lang="ar-aeb-x-tunis-vicav">iblīs</orth>
+  </form>
+  <gramGrp>
+    <gram type="pos">properNoun</gram>
+    <gram type="root" xml:lang="ar-aeb-x-tunis-vicav">ʔbls</gram>
+  </gramGrp>
+  <sense>
+    <cit type="translation" xml:lang="en">
+        <quote>the devil</quote>
+    </cit>
+    <cit type="translation" xml:lang="en">
+        <quote>Satan</quote>
+    </cit>
+    <cit type="literalTranslation" xml:lang="en">
+        <quote>Iblis</quote>
+    </cit>
+    <cit type="translation" xml:lang="de">
+        <quote>der Teufel</quote>
+    </cit>
+    <cit type="translation" xml:lang="de">
+        <quote>Satan</quote>
+    </cit>
+    <cit type="literalTranslation" xml:lang="de">
+        <quote>Iblis</quote>
+    </cit>
+    <cit type="translation" xml:lang="fr">
+        <quote>le diable</quote>
+    </cit>
+    <cit type="translation" xml:lang="fr">
+        <quote>Satan</quote>
+    </cit>
+    <cit type="literalTranslation" xml:lang="fr">
+        <quote>Iblis</quote>
+    </cit>
+  </sense>
   <!-- ... -->
 </entry>
 ```
