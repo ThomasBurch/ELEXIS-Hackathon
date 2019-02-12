@@ -43,8 +43,9 @@ export class AppComponent implements AfterContentInit, OnInit {
   groupLangsMap = {
     0: 'ar',
     1: 'de',
-    2: 'fr',
-    3: 'root',
+    2: 'en',
+    3: 'fr',
+    4: 'root',
   };
 
   lemmaList: any[] = [];
