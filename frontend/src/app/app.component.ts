@@ -505,7 +505,83 @@ export class AppComponent implements AfterContentInit, OnInit {
     this.graphElems.labelGroup = labelGroup;
     
     graphLayout.on('tick', ticked);
+
+    // draw legend on graph area
+    let lineY = 15;
+    const r = 7;
+    const panelW = parseInt(svg.attr('width'), 10);
+    const legendPosX = panelW - 100;
+    const textPosX = panelW - 85;
+    const circlePosX = panelW - 45;
+    const getCirclePosY = (cr: number, y: number) => {
+      return y - cr + 1;
+    };
+    const legend = svg.append('rect').attr('id', 'legend')
+      .attr('width', 100).attr('height', 100)
+      .style('fill', 'white')
+      .attr('x', legendPosX)
+      ;
+
+    svg.append('text').text('ar: ')
+    .attr('x', textPosX)
+    .attr('y', lineY)
+    ;
+    svg.append('circle')
+    .attr('r', r)
+    .attr('cx', circlePosX)
+    .attr('cy', getCirclePosY(r, lineY))
+    .style('opacity', this.graphSettings.normalOpacity)
+    .attr('fill', this.nodeColors[0]);
+
+    lineY += 20;
+    svg.append('text').text('de: ')
+    .attr('x', textPosX)
+    .attr('y', lineY)
+    ;
+    svg.append('circle')
+    .attr('r', r)
+    .attr('cx', circlePosX)
+    .attr('cy', getCirclePosY(r, lineY))
+    .style('opacity', this.graphSettings.normalOpacity)
+    .attr('fill', this.nodeColors[1]);
+
+    lineY += 20;
+    svg.append('text').text('en: ')
+    .attr('x', textPosX)
+    .attr('y', lineY)
+    ;
+    svg.append('circle')
+    .attr('r', r)
+    .attr('cx', circlePosX)
+    .attr('cy', getCirclePosY(r, lineY))
+    .style('opacity', this.graphSettings.normalOpacity)
+    .attr('fill', this.nodeColors[2]);
+
+    lineY += 20;
+    svg.append('text').text('fr: ')
+    .attr('x', textPosX)
+    .attr('y', lineY)
+    ;
+    svg.append('circle')
+    .attr('r', r)
+    .attr('cx', circlePosX)
+    .attr('cy', getCirclePosY(r, lineY))
+    .style('opacity', this.graphSettings.normalOpacity)
+    .attr('fill', this.nodeColors[3]);
+
+    lineY += 20;
+    svg.append('text').text('ar root: ')
+    .attr('x', textPosX)
+    .attr('y', lineY)
+    ;
+    svg.append('circle')
+    .attr('r', r)
+    .attr('cx', circlePosX + 30)
+    .attr('cy', getCirclePosY(r, lineY))
+    .style('opacity', this.graphSettings.normalOpacity)
+    .attr('fill', this.nodeColors[4]);
   }
+
 
   stopSimulation() {
     this.graphElems.simulation.stop();
