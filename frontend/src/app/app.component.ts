@@ -45,7 +45,7 @@ export class AppComponent implements AfterContentInit, OnInit {
     1: 'de',
     2: 'en',
     3: 'fr',
-    4: 'root',
+    4: 'ar root',
   };
 
   lemmaList: any[] = [];
@@ -135,6 +135,12 @@ export class AppComponent implements AfterContentInit, OnInit {
 
     // // zoom reset
     // this.graphSettings.zoomFactor = 1;
+  }
+
+  getLemmaCircleSpecClass(lemmaItem) {
+    // const color = this.nodeColors[lemmaItem.node.group];
+    const lang = this.getLangsByGroup(lemmaItem.node.group);
+    return 'circle circle-' + lang;
   }
 
   nodeTextFilterChange() {
@@ -466,15 +472,16 @@ export class AppComponent implements AfterContentInit, OnInit {
       .attr('stroke-width', '1px');
     this.graphElems.linkGroup = linkGroup;
     
-    const nodeGroup = container.append('g').attr('class', 'nodes')
+    const nodeGroup = container.append('g')
+      .attr('class', 'nodes')
       .selectAll('circle')
       .data(data.nodes)
       .enter()
       .append('circle')
       .attr('id', (d: any) => d.id)
+      .attr('class', (d: any) => 'circle-' + this.groupLangsMap[d.group])
       .attr('r', 7)
-      .style('opacity', this.graphSettings.normalOpacity)
-      .attr('fill', (d: any) => this.nodeColors[d.group]);
+      .style('opacity', this.graphSettings.normalOpacity);
     
     nodeGroup.on('mouseover', focus).on('mouseout', unfocus);
     
@@ -510,9 +517,12 @@ export class AppComponent implements AfterContentInit, OnInit {
     let lineY = 15;
     const r = 7;
     const panelW = parseInt(svg.attr('width'), 10);
-    const legendPosX = panelW - 100;
-    const textPosX = panelW - 85;
-    const circlePosX = panelW - 45;
+    // const legendPosX = panelW - 100;
+    // const textPosX = panelW - 85;
+    // const circlePosX = panelW - 45;
+    const legendPosX = 0;
+    const textPosX = 15;
+    const circlePosX = 55;
     const getCirclePosY = (cr: number, y: number) => {
       return y - cr + 1;
     };
@@ -522,64 +532,26 @@ export class AppComponent implements AfterContentInit, OnInit {
       .attr('x', legendPosX)
       ;
 
-    svg.append('text').text('ar: ')
-    .attr('x', textPosX)
-    .attr('y', lineY)
-    ;
-    svg.append('circle')
-    .attr('r', r)
-    .attr('cx', circlePosX)
-    .attr('cy', getCirclePosY(r, lineY))
-    .style('opacity', this.graphSettings.normalOpacity)
-    .attr('fill', this.nodeColors[0]);
+    for (const key in this.groupLangsMap) {
+      if (this.groupLangsMap[key]) {
+        const lang = this.groupLangsMap[key];
+        svg.append('text').text(lang + ': ')
+        .attr('x', textPosX)
+        .attr('y', lineY)
+        ;
+        const circle = svg.append('circle')
+        .attr('r', r)
+        .attr('cx', circlePosX)
+        .attr('cy', getCirclePosY(r, lineY))
+        .style('opacity', this.graphSettings.normalOpacity)
+        .attr('class', 'circle-' + lang);
+        if (lang === 'ar root') {
+          circle.attr('cx', circlePosX + 30);
+        }
 
-    lineY += 20;
-    svg.append('text').text('de: ')
-    .attr('x', textPosX)
-    .attr('y', lineY)
-    ;
-    svg.append('circle')
-    .attr('r', r)
-    .attr('cx', circlePosX)
-    .attr('cy', getCirclePosY(r, lineY))
-    .style('opacity', this.graphSettings.normalOpacity)
-    .attr('fill', this.nodeColors[1]);
-
-    lineY += 20;
-    svg.append('text').text('en: ')
-    .attr('x', textPosX)
-    .attr('y', lineY)
-    ;
-    svg.append('circle')
-    .attr('r', r)
-    .attr('cx', circlePosX)
-    .attr('cy', getCirclePosY(r, lineY))
-    .style('opacity', this.graphSettings.normalOpacity)
-    .attr('fill', this.nodeColors[2]);
-
-    lineY += 20;
-    svg.append('text').text('fr: ')
-    .attr('x', textPosX)
-    .attr('y', lineY)
-    ;
-    svg.append('circle')
-    .attr('r', r)
-    .attr('cx', circlePosX)
-    .attr('cy', getCirclePosY(r, lineY))
-    .style('opacity', this.graphSettings.normalOpacity)
-    .attr('fill', this.nodeColors[3]);
-
-    lineY += 20;
-    svg.append('text').text('ar root: ')
-    .attr('x', textPosX)
-    .attr('y', lineY)
-    ;
-    svg.append('circle')
-    .attr('r', r)
-    .attr('cx', circlePosX + 30)
-    .attr('cy', getCirclePosY(r, lineY))
-    .style('opacity', this.graphSettings.normalOpacity)
-    .attr('fill', this.nodeColors[4]);
+        lineY += 20;
+      }
+    }
   }
 
 

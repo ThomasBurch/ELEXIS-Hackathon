@@ -53,8 +53,8 @@
             (click)="clickLemmaItem(l)"
             (mouseover)="mouseoverLemmaItem(l)"
             (mouseout)="mouseoutLemmaItem()"
-          > 
-            {{ getLangsByGroup(l.node.group) + ': ' + l.node.text }} 
+          ><span [class]="getLemmaCircleSpecClass(l)">&#xf111;</span>
+            {{ l.node.text }} 
           </mat-list-item>
         </mat-list>
       </div>

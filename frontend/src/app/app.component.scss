@@ -3,6 +3,7 @@ $space: 2px;
 $tabControlH: 30px;
 $clusterListPaneW: 200px;
 $textListPaneW: 180px;
+$listItemColor: rgb(102, 102, 102);
 
 .main {
   // margin: 2px 2px 2px 2px;
@@ -29,6 +30,7 @@ $textListPaneW: 180px;
   height: $tabControlH;
 
   .tabRootRadios {
+    flex-grow: 1;
     width: 50%;
     color: darkgreen;
     padding-top: 5px;
@@ -43,7 +45,7 @@ $textListPaneW: 180px;
   }
 
   .tabLangs {
-    flex-grow: 1;
+    margin-left: 20px;
   }
 }
 
@@ -61,10 +63,17 @@ $textListPaneW: 180px;
     }
   }
 
+  mat-form-field {
+    color: $listItemColor !important;
+  }
+
   #clusterListPane {
     min-width: $clusterListPaneW;
     max-width: $clusterListPaneW;
 
+    mat-list-option {
+      color: $listItemColor;
+    }
     mat-list-option:hover {
       background-color: cadetblue;
     }
@@ -73,11 +82,19 @@ $textListPaneW: 180px;
   #lemmalistPane {
     min-width: $textListPaneW;
     max-width: $textListPaneW;
+    mat-list-item {
+      color: $listItemColor;
+    }
     mat-list-item:hover {
       background-color: darkcyan;
       cursor: pointer;
     }
 
+    .circle {
+      font-family: circle;
+      font-size: 14px;
+      margin-right: 5px;
+    }
     .hideLemmaItem {
       display: none;
     }
@@ -100,7 +117,7 @@ $textListPaneW: 180px;
         .controlButton {
           height: 20px;
           line-height: 20px !important;
-          margin-right: 2px;
+          margin-right: 4px;
         }
       }
 
