@@ -4,6 +4,7 @@ import { MatSelectionList, MatTabChangeEvent, MatRadioChange } from '@angular/ma
 import { OnInit } from '@angular/core';
 import * as d3 from 'd3';
 
+// read data in the app; the data are automatically uglified and compressed in the release version
 declare const require: any;
 const deClusterGraphInfo = require('../../../data/de_cluster_graph.json');
 const enClusterGraphInfo = require('../../../data/en_cluster_graph.json');
@@ -112,37 +113,53 @@ export class AppComponent implements AfterContentInit, OnInit {
     this.selectClusterLang('de', true);
   }
 
-  getLangsByGroup(group: number) {
+  /**
+   * get language short name by group number
+   * 
+   * @param group number of group
+   * @returns {string} language short name
+   */
+  getLangsByGroup(group: number): string {
     return this.groupLangsMap[group];
   }
 
+  /**
+   * handle mouseover event on a list item of lemmas or translation texts
+   *
+   * @param {*} lemmaItem
+   * @memberof AppComponent
+   */
   mouseoverLemmaItem(lemmaItem) {
     this.onlyShowNeighborsAndSelf(lemmaItem.node);
   }
 
+  /**
+   * handle mouseout event on a list item of lemmas or translation texts
+   *
+   * @memberof AppComponent
+   */
   mouseoutLemmaItem() {
     this.showAllNodes();
   }
 
-  clickLemmaItem(lemmaItem) {
-    // not working perfectly
-    // const x = lemmaItem.node.x;
-    // const y = lemmaItem.node.y;
-    // const svgBbox = this.graphElems.svg.node().getBBox();
-    // const centerX = svgBbox.x + svgBbox.width / 2;
-    // const centerY = svgBbox.y + svgBbox.height / 2;
-    // this.graphElems.container.attr('transform', 'translate(' + (centerX - x) + ',' + (centerY - y) + ')');
-
-    // // zoom reset
-    // this.graphSettings.zoomFactor = 1;
-  }
-
+  
+  /**
+   * get class name of circle before lammas or translation texts
+   *
+   * @param {*} lemmaItem
+   * @returns
+   * @memberof AppComponent
+   */
   getLemmaCircleSpecClass(lemmaItem) {
-    // const color = this.nodeColors[lemmaItem.node.group];
     const lang = this.getLangsByGroup(lemmaItem.node.group);
     return 'circle circle-' + lang;
   }
 
+  /**
+   * handle event of filter input above lemma list 
+   *
+   * @memberof AppComponent
+   */
   nodeTextFilterChange() {
     const filter = this.nodeTextFilterInput.trim();
     for (const l of this.lemmaList) {
@@ -154,11 +171,24 @@ export class AppComponent implements AfterContentInit, OnInit {
     }
   }
 
+  /**
+   * handle event of filter input above cluster list
+   *
+   * @memberof AppComponent
+   */
   clusterFilterChange() {
     const filter = this.clusterFilterInput.trim();
     this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, filter);
   }
 
+  /**
+   * filter clusters in cluster list according to given text
+   *
+   * @param {any[]} cg
+   * @param {string} text
+   * @returns
+   * @memberof AppComponent
+   */
   filterClusters(cg: any[], text: string) {
     this.removeGraph();
     let filtered = cg;
@@ -199,6 +229,13 @@ export class AppComponent implements AfterContentInit, OnInit {
     return filtered;
   }
 
+  /**
+   * change list of clusters according to the given language
+   *
+   * @param {string} lang language short name
+   * @param {boolean} redraw indicate if graph should be redrawed after selecting new clusters
+   * @memberof AppComponent
+   */
   selectClusterLang(lang: string, redraw: boolean) {
 
     this.selectedLang = lang;
@@ -222,15 +259,33 @@ export class AppComponent implements AfterContentInit, OnInit {
     }
   }
 
+  /**
+   * handle event of radio button for showing gram "root" information in clusters
+   *
+   * @param {MatRadioChange} event
+   * @memberof AppComponent
+   */
   gramRootChange(event: MatRadioChange) {
     this.gramRootRadioSwitcher = event.value;
     this.selectClusterLang(this.selectedLang, true);
   }
 
+  /**
+   * handle event of changing clusters of different languages
+   *
+   * @param {MatTabChangeEvent} event
+   * @memberof AppComponent
+   */
   langTabChange(event: MatTabChangeEvent) {
     this.selectClusterLang(event.tab.textLabel.replace(/ar-/, ''), true);
   }
 
+  /**
+   * handle event of changing input of limiting max nodes
+   *
+   * @param {*} event
+   * @memberof AppComponent
+   */
   maxNodesChange(event) {
     const text = event.target.value;
     if (/^[0-9]+$/.test(text)) {
@@ -239,6 +294,12 @@ export class AppComponent implements AfterContentInit, OnInit {
     }
   }
 
+  /**
+   * handle event of changing input of limiting min nodes
+   *
+   * @param {*} event
+   * @memberof AppComponent
+   */
   minNodesChange(event) {
     const text = event.target.value;
     if (/^[0-9]+$/.test(text)) {
@@ -247,6 +308,13 @@ export class AppComponent implements AfterContentInit, OnInit {
     }
   }
 
+  /**
+   * handle event of selecting a cluster from cluster list
+   *
+   * @param {MouseEvent} event
+   * @param {*} cluster
+   * @memberof AppComponent
+   */
   selectCluster(event: MouseEvent, cluster) {
     for (const c of this.clusterGraphFiltered) {
       if (c !== cluster) {
@@ -261,6 +329,11 @@ export class AppComponent implements AfterContentInit, OnInit {
     this.showCluster();
   }
 
+  /**
+   * remove graph from panel 
+   *
+   * @memberof AppComponent
+   */
   removeGraph() {
     if (this.graphElems.svg) {
       this.graphElems.simulation.stop();
@@ -268,6 +341,12 @@ export class AppComponent implements AfterContentInit, OnInit {
     }
   }
 
+  /**
+   * create list of lemma and translation texts
+   *
+   * @param {*} nodes
+   * @memberof AppComponent
+   */
   createLemmaList(nodes) {
     const list = [];
     for (let i = 0; i < nodes.length; i++) {
@@ -295,6 +374,12 @@ export class AppComponent implements AfterContentInit, OnInit {
     });
   }
 
+  /**
+   * highlight seleted node and its neighbor nodes 
+   *
+   * @param {*} d
+   * @memberof AppComponent
+   */
   onlyShowNeighborsAndSelf(d) {
     const tempIndex = d.index;
     this.graphElems.nodeGroup.style('cursor', (o: any) => {
@@ -321,6 +406,11 @@ export class AppComponent implements AfterContentInit, OnInit {
     });
   }
 
+  /**
+   * show all nodes normally
+   *
+   * @memberof AppComponent
+   */
   showAllNodes() {
     this.graphElems.nodeGroup.style('opacity', this.graphSettings.normalOpacity);
     this.graphElems.nodeGroup.attr('r', 7);
@@ -330,10 +420,24 @@ export class AppComponent implements AfterContentInit, OnInit {
     this.graphElems.linkGroup.style('opacity', this.graphSettings.normalOpacity);
   }
 
+  /**
+   * check if given index of nodes are neighbors
+   *
+   * @param {number} index1
+   * @param {number} index2
+   * @returns
+   * @memberof AppComponent
+   */
   checkNeighbour(index1: number, index2: number) {
     return index1 === index2 || this.graphElems.neighborsList[index1 + '-' + index2];
   }
 
+  /**
+   * create graph of selected cluster
+   *
+   * @returns
+   * @memberof AppComponent
+   */
   showCluster() {
     this.removeGraph();
     const selectedClusters = this.clusterGraphFiltered.filter(c => c.selected);
@@ -408,10 +512,8 @@ export class AppComponent implements AfterContentInit, OnInit {
     const dragstarted = (d) => {
       d3.event.sourceEvent.stopPropagation();
       if (!d3.event.active) {
-        // if (!this.simulationStopped) {
         graphLayout.alpha(0.3);
         graphLayout.alphaTarget(0).restart();
-        // } 
       }
     };
     
@@ -437,9 +539,6 @@ export class AppComponent implements AfterContentInit, OnInit {
 
     const ticked = () => {
       this.tickCount++;
-      // if (this.tickCount > 250) {
-      //   this.simulation.stop();
-      // }
       nodeGroup.call(updateNode);
       linkGroup.call(updateLink);
       labelGroup.call(updateLable);
@@ -550,11 +649,21 @@ export class AppComponent implements AfterContentInit, OnInit {
   }
 
 
+  /**
+   * stop calculating and updating nodes' positions
+   *
+   * @memberof AppComponent
+   */
   stopSimulation() {
     this.graphElems.simulation.stop();
     this.simulationStopped = true;
   }
 
+  /**
+   * stop calculating and updating nodes' positions
+   *
+   * @memberof AppComponent
+   */
   startSimulation() {
     this.graphElems.simulation.force('charge', d3.forceManyBody().strength(this.graphSettings.nodeCharge))
     .force('link', d3.forceLink(this.data.links).id((d: any) => d.id ).distance(this.graphSettings.linkDistance).strength(1));
@@ -563,12 +672,23 @@ export class AppComponent implements AfterContentInit, OnInit {
     this.simulationStopped = false;
   }
 
+  /**
+   * ease graph (longer deges)
+   *
+   * @memberof AppComponent
+   */
   ease() {
     this.graphSettings.nodeCharge -= this.graphSettings.nodeChargeStep;
     this.graphSettings.linkDistance += this.graphSettings.linkDistanceStep;
     this.startSimulation();
   }
 
+  /**
+   * tense graph (shorter edges)
+   *
+   * @returns
+   * @memberof AppComponent
+   */
   tense() {
     if (this.graphSettings.nodeCharge >= 0) {
       this.graphSettings.nodeCharge = -500;
@@ -579,12 +699,22 @@ export class AppComponent implements AfterContentInit, OnInit {
     this.startSimulation();
   }
 
+  /**
+   * zoom into the graph (larger nodes and texts)
+   *
+   * @memberof AppComponent
+   */
   zoomIn() {
     this.graphSettings.zoomFactor += this.graphSettings.zoomStep;
     this.graphSettings.zoomFactor = this.graphSettings.zoomFactor > 4 ? 4 : this.graphSettings.zoomFactor;
     this.graphElems.zoom.scaleTo(this.graphElems.svg, this.graphSettings.zoomFactor);
   }
 
+  /**
+   * zoom out of graph (smaller nodes and text)
+   *
+   * @memberof AppComponent
+   */
   zoomOut() {
     this.graphSettings.zoomFactor -= this.graphSettings.zoomStep;
     this.graphSettings.zoomFactor = this.graphSettings.zoomFactor < 0.2 ? 0.2 : this.graphSettings.zoomFactor;
