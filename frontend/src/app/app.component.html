@@ -72,8 +72,10 @@
         <div class="minMaxNodesControlBlock">
           <span class="minMaxNodesText">min nodes: </span>
           <input type="text" [(ngModel)]="minNodes" (input)="minNodesChange($event)">
+          <span class="minMaxNodesText">({{ minNodesReal }})</span>
           <span class="minMaxNodesText">max nodes: </span>
           <input type="text" [(ngModel)]="maxNodes" (input)="maxNodesChange($event)">
+          <span class="minMaxNodesText">({{ maxNodesReal }})</span>
         </div>
       </div>
       <div id="canvas" #canvas></div>

@@ -53,11 +53,11 @@ export class AppComponent implements AfterContentInit, OnInit {
   clusterGraph: any[];
   clusterGraphFiltered: any[];
   selectedLang = 'de';
-  minNodesDefault = 20;
-  maxNodesDefault = 500;
+  minNodesReal = 1;
+  maxNodesReal = 9999;
   minNodes = 20;
   maxNodes = 500;
-  clusterFilterInput: string = '>' + (this.minNodes - 1);
+  clusterFilterInput = ' ';
   nodeTextFilterInput = ' ';
 
 
@@ -155,45 +155,40 @@ export class AppComponent implements AfterContentInit, OnInit {
   }
 
   clusterFilterChange() {
-    const filter = this.clusterFilterInput;
-    if (/^[0-9]+$/g.test(filter)) {
-      const num = parseInt(filter, 10);
-      this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, num, num, '');
-    } else if (filter === '') {
-      this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, this.maxNodes, '');
-    } else {
-      if (filter.indexOf('>') === 0) {
-        const p = filter.replace(/^>/, '').trim();
-        const num = parseInt(p, 10);
-        if (!isNaN(num)) {
-          const fnum = num > this.minNodes ? num : this.minNodes;
-          this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, fnum, this.maxNodes, '');
-        }
-      } else if (filter.indexOf('<') === 0) {
-        const p = filter.replace(/^</, '').trim();
-        const num = parseInt(p, 10);
-        if (!isNaN(num)) {
-          const fnum = num < this.minNodes ? num : this.minNodes;
-          this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, fnum, '');
-        }
-      }  else {
-        this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, this.maxNodes, filter);
-      }
-    }
+    const filter = this.clusterFilterInput.trim();
+    this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, filter);
   }
 
-  filterClusters(cg: any[], min: number, max: number, text: string) {
+  filterClusters(cg: any[], text: string) {
     this.removeGraph();
     let filtered = cg;
+    let minNodesReal = 999999;
+    let maxNodesReal = 1;
+    filtered.forEach(cluster => {
+      maxNodesReal = maxNodesReal > cluster.nodes.length ? maxNodesReal : cluster.nodes.length;      
+      minNodesReal = minNodesReal < cluster.nodes.length || cluster.nodes.length === 0 ? minNodesReal : cluster.nodes.length;
+    });
+    this.minNodesReal = minNodesReal;
+    this.maxNodesReal = maxNodesReal;
+    this.maxNodes = this.maxNodes > this.maxNodesReal ? this.maxNodesReal : this.maxNodes;
+    this.minNodes = this.minNodes < this.minNodesReal ? this.minNodesReal : this.minNodes;
+    let min = this.minNodes;
+    let max = this.maxNodes;
     if (text !== '') {
-      filtered = filtered.filter((c: any) => {
-        for (const n of c.nodes) {
-          if (n.text.indexOf(text) > -1) {
-            return true;
+      if (/^[0-9]+$/g.test(text)) {
+        const num = parseInt(text, 10);
+        min = num;
+        max = num;
+      } else {
+        filtered = filtered.filter((c: any) => {
+          for (const n of c.nodes) {
+            if (n.text.indexOf(text) > -1) {
+              return true;
+            }
           }
-        }
-        return false;
-      });
+          return false;
+        });
+      }
     } else {
       filtered = this.clusterGraph;
     }
@@ -217,7 +212,7 @@ export class AppComponent implements AfterContentInit, OnInit {
     } else if (lang === 'all-langs') {
       this.clusterGraph = rootSelectedData[3];
     }
-    this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.minNodes, this.maxNodes, '');
+    this.clusterGraphFiltered = this.filterClusters(this.clusterGraph, this.clusterFilterInput);
     if (this.clusterGraphFiltered && this.clusterGraphFiltered.length > 0) {
       this.clusterGraphFiltered[0].selected = true;
       // this.clusterGraphFiltered[this.clusterGraphFiltered.length - 1].selected = true;
