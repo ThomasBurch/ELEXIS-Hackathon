@@ -45,7 +45,7 @@ export class AppComponent implements AfterContentInit, OnInit {
     1: 'de',
     2: 'en',
     3: 'fr',
-    4: 'ar root',
+    4: 'ar-root',
   };
 
   lemmaList: any[] = [];
@@ -540,7 +540,7 @@ export class AppComponent implements AfterContentInit, OnInit {
         .attr('cy', getCirclePosY(r, lineY))
         .style('opacity', this.graphSettings.normalOpacity)
         .attr('class', 'circle-' + lang);
-        if (lang === 'ar root') {
+        if (lang === 'ar-root') {
           circle.attr('cx', circlePosX + 30);
         }
 
