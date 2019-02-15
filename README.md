@@ -6,7 +6,7 @@ Li Sheng sheng@uni-trier.de
 
 ## Short description:
 
-In this repository we implemented a networks visualization application based on the given TUNICO dictionary to show the relationships between Tunis Arabic words and its translations in German, English and French. We call our application **TAGEF-Net** (Tunis Arabic German English French Network). 
+In this repository we implemented a networks visualization application based on the given TUNICO dictionary to show the relationships between Tunis Arabic words and their translations in German, English and French. We call our application **TAGEF-Net** (Tunis Arabic German English French Network). 
 
 First of all, we did some statistcal analysis about the given dictionary data using scripts and XPath. The results can be found in file [analysis/results.md](analysis/results.md).
 
@@ -64,7 +64,7 @@ The TAGEF-Net application for visualization of the networks in the given diction
   # if you run it the first time
   npm run first-start
 
-  # for start it again
+  # for starting it again
   npm run start
 ```
 
