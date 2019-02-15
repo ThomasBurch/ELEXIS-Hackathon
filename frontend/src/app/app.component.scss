@@ -1,7 +1,7 @@
 
 $space: 2px;
 $tabControlH: 30px;
-$clusterListPaneW: 200px;
+$clusterListPaneW: 160px;
 $textListPaneW: 180px;
 $listItemColor: rgb(102, 102, 102);
 
@@ -115,6 +115,7 @@ $listItemColor: rgb(102, 102, 102);
         flex-grow: 1;
 
         .controlButton {
+          font-size: 12px;
           height: 20px;
           line-height: 20px !important;
           margin-right: 4px;
@@ -123,11 +124,16 @@ $listItemColor: rgb(102, 102, 102);
 
       .minMaxNodesControlBlock {
         .minMaxNodesText {
-          margin-left: 10px;
           height: 20px;
           line-height: 20px;
           padding-bottom: 2px;
           font-size: 12px;
+        }
+        .minMaxNodesTextBefore {
+          margin-left: 10px;
+        }
+        .minMaxNodesTextInput {
+          width: 50px;
         }
 
         input {

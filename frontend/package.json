@@ -1,13 +1,11 @@
 {
-  "name": "frontend",
-  "version": "0.0.0",
+  "name": "tagef-net-frontend",
+  "version": "1.0.0",
+  "main": "main.js", 
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+    "first-start": "ng build --aot --base-href ./ && electron .",
+    "start": "electron .",
+    "dev": "ng serve --port 4001 --host 0.0.0.0 --disable-host-check"
   },
   "private": true,
   "dependencies": {
@@ -23,6 +21,7 @@
     "@angular/router": "~7.2.0",
     "core-js": "^2.5.4",
     "d3": "^5.8.2",
+    "electron": "^4.0.5",
     "hammerjs": "^2.0.8",
     "rxjs": "~6.3.3",
     "tslib": "^1.9.0",

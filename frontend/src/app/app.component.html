@@ -70,11 +70,11 @@
           <button mat-raised-button class="controlButton" (click)="zoomOut()">zoom out</button>
         </div>
         <div class="minMaxNodesControlBlock">
-          <span class="minMaxNodesText">min nodes: </span>
-          <input type="text" [(ngModel)]="minNodes" (input)="minNodesChange($event)">
+          <span class="minMaxNodesText minMaxNodesTextBefore">min nodes: </span>
+          <input class="minMaxNodesTextInput" type="text" [(ngModel)]="minNodes" (input)="minNodesChange($event)">
           <span class="minMaxNodesText">({{ minNodesReal }})</span>
-          <span class="minMaxNodesText">max nodes: </span>
-          <input type="text" [(ngModel)]="maxNodes" (input)="maxNodesChange($event)">
+          <span class="minMaxNodesText minMaxNodesTextBefore">max nodes: </span>
+          <input class="minMaxNodesTextInput" type="text" [(ngModel)]="maxNodes" (input)="maxNodesChange($event)">
           <span class="minMaxNodesText">({{ maxNodesReal }})</span>
         </div>
       </div>

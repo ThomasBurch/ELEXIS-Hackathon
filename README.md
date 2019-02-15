@@ -1,8 +1,12 @@
-ELEXIS-Hackathon
+TAGEF-Net
 ====================
 
 Thomas Burch burch@uni-trier.de
 Li Sheng sheng@uni-trier.de
+
+## Discription:
+
+todo
 
 ## Presentation:
 
@@ -10,11 +14,52 @@ todo
 
 ## How to run it:
 
-todo
+### dependencies:
+
+nodejs >= v10.0.0
+python >= v3.6
+
+### repocessing data:
+
+In this repository there are prepared JSON data based on the given TUNICO dictionary. If you would like to reproduce the data from changed dictionary, you can put this dictionary XML-data in `data/` and run this command:
+
+```
+  python src/translationCluster.py data/name-of-dict-file.xml
+```
+
+### starting TAGEF-Net visualization:
+
+The TAGEF-Net application for visualization the network in the given dictionary is in directory `frontend/`. You can start it from this directory by using following commands:
+
+```
+  # go to the application directory
+  cd frontend
+
+  # if you run it the first time
+  npm run first-start
+
+  # for start it again
+  npm run start
+```
 
 ## For development:
 
-todo
+### for further developing the data proceccing scripts:
+
+The data processing scripts are in directory `src/`. The file `TunisArabicClusterBuilder.py` holds the methods to generate the JSON data which are loaded in the application for visualizing the network in the dictionary. The file `translationCluster.py` is an example how to use this data builder script.
+
+### for further developing the visualization application:
+
+You can just run the following command in directory `frontend/` and open the application in browser with `http://localhost:4001`. Every time the source code are changed, the application will be automatically reloaded.
+
+```
+  # go to the application directory
+  cd frontend
+
+  # start developing the TAGEF-Net application 
+  npm run dev
+
+```
 
 ## Some notes for data cleaning or data errors:
 
