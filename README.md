@@ -1,12 +1,18 @@
-TAGEF-Net
+TAGEF-Net for ELEXIS-Hackathon
 ====================
 
 Thomas Burch burch@uni-trier.de
 Li Sheng sheng@uni-trier.de
 
-## Discription:
+## Short discription:
 
-todo
+In this repository we implemented a network visualization application based on the given TUNICO dictionary to show the relationships between Tunis Arabic words and its translations in German, English and French. We call our application **TAGEF-Net** (Tunis Arabic German English French Network). 
+
+First of all, we did some statistcal analysis about the given dictionary data using scripts and XPath. The results can be found in file [analysis.md](analysis.md).
+
+Then according to the analysis and the amount of time we have, we decided to do a network visualization about the Arabic words and their translations. You can find a detailed introduction of it in the section [Presentation](#Presentation).
+
+> Due to lack of time and straightforward functionalities there is no specific unit-test code or CI tool like `travis` integrated in the implementation.
 
 ## Presentation:
 
@@ -16,8 +22,11 @@ todo
 
 ### dependencies:
 
-nodejs >= v10.0.0
-python >= v3.6
+* nodejs >= v10.0.0
+* python >= v3.6
+
+For how to install nodejs and python please see [nodejs](https://nodejs.org/en/) and [python](https://www.python.org/)
+
 
 ### repocessing data:
 
@@ -27,6 +36,12 @@ In this repository there are prepared JSON data based on the given TUNICO dictio
   python src/translationCluster.py data/name-of-dict-file.xml
 ```
 
+The produced JSON data will be also in `data/` directory.
+
+Note:
+
+> If you use new XML-data, the data must have the same stucture like the given TUNICO dictionary.
+
 ### starting TAGEF-Net visualization:
 
 The TAGEF-Net application for visualization the network in the given dictionary is in directory `frontend/`. You can start it from this directory by using following commands:
@@ -34,6 +49,9 @@ The TAGEF-Net application for visualization the network in the given dictionary 
 ```
   # go to the application directory
   cd frontend
+
+  # install module dependencies
+  npm install
 
   # if you run it the first time
   npm run first-start
@@ -50,11 +68,14 @@ The data processing scripts are in directory `src/`. The file `TunisArabicCluste
 
 ### for further developing the visualization application:
 
-You can just run the following command in directory `frontend/` and open the application in browser with `http://localhost:4001`. Every time the source code are changed, the application will be automatically reloaded.
+You can just run the following command in directory `frontend/` and open the application in browser with `http://localhost:4001`. Every time the source code will be changed, then the application will be automatically reloaded.
 
 ```
   # go to the application directory
   cd frontend
+
+  # install module dependencies
+  npm install
 
   # start developing the TAGEF-Net application 
   npm run dev
@@ -63,7 +84,9 @@ You can just run the following command in directory `frontend/` and open the app
 
 ## Some notes for data cleaning or data errors:
 
-### 2 translations in entries not in sense-tag:
+Here we list some errors or things we don't fully understand in the given TUNICO dictionary.
+
+### 2 translations directly under entries:
 
     //tei:div[@type="entries"]/tei:entry[count(./tei:cit) > 0]
 
