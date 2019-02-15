@@ -61,7 +61,7 @@ The TAGEF-Net application for visualization of the networks in the given diction
   # install module dependencies
   npm install
 
-  # if you run it the first time
+  # if you run it the first time or after modifying/regenerating JSON data
   npm run first-start
 
   # for starting it again
