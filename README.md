@@ -4,19 +4,27 @@ TAGEF-Net for ELEXIS-Hackathon
 Thomas Burch burch@uni-trier.de
 Li Sheng sheng@uni-trier.de
 
-## Short discription:
+## Short description:
 
-In this repository we implemented a network visualization application based on the given TUNICO dictionary to show the relationships between Tunis Arabic words and its translations in German, English and French. We call our application **TAGEF-Net** (Tunis Arabic German English French Network). 
+In this repository we implemented a networks visualization application based on the given TUNICO dictionary to show the relationships between Tunis Arabic words and its translations in German, English and French. We call our application **TAGEF-Net** (Tunis Arabic German English French Network). 
 
-First of all, we did some statistcal analysis about the given dictionary data using scripts and XPath. The results can be found in file [analysis.md](analysis.md).
+First of all, we did some statistcal analysis about the given dictionary data using scripts and XPath. The results can be found in file [analysis/results.md](analysis/results.md).
 
-Then according to the analysis and the amount of time we have, we decided to do a network visualization about the Arabic words and their translations. You can find a detailed introduction of it in the section [Presentation](#Presentation).
+Then according to the analysis and the amount of time we have, we decided to do a networks visualization about the Arabic words and their translations. You can find a detailed introduction of it in the section [Presentation](#Presentation). We tried to visualize the connections between Arabic words and other languages with and without the Arabic "root" information (which encoded in tag `gram` with type `root`). Here is a simple example with Arabic "root":
 
-> Due to lack of time and straightforward functionalities there is no specific unit-test code or CI tool like `travis` integrated in the implementation.
+![example](imgs/example.png)
+
+We can see that the Arabic roots “kwy” and “wšm” are indirectly connected with each other in one network because they have the similar meaning about “tattoo”, “brand” and “cauterizing”.
+
+> Due to lack of time and straightforward functionalities there is no specific unit-test code or CI tool like `travis` integrated in the implementation. Bug reports or feature requests are always welcome. 
+
+Here is a preview of the **TAGEF-Net** application
+
+![TAGEF-Net](imgs/TAGEF-Net-overview.png)
 
 ## Presentation:
 
-todo
+Please see the presentation file [presentation/TAGEF-Net.odp](presentation/TAGEF-Net.odp).
 
 ## How to run it:
 
@@ -44,7 +52,7 @@ Note:
 
 ### starting TAGEF-Net visualization:
 
-The TAGEF-Net application for visualization the network in the given dictionary is in directory `frontend/`. You can start it from this directory by using following commands:
+The TAGEF-Net application for visualization of the networks in the given dictionary is in directory `frontend/`. You can start it from this directory by using following commands:
 
 ```
   # go to the application directory
@@ -64,7 +72,7 @@ The TAGEF-Net application for visualization the network in the given dictionary 
 
 ### for further developing the data proceccing scripts:
 
-The data processing scripts are in directory `src/`. The file `TunisArabicClusterBuilder.py` holds the methods to generate the JSON data which are loaded in the application for visualizing the network in the dictionary. The file `translationCluster.py` is an example how to use this data builder script.
+The data processing scripts are in directory `src/`. The file `TunisArabicClusterBuilder.py` holds the methods to generate the JSON data which are loaded in the application for visualizing the networks in the dictionary. The file `translationCluster.py` is an example how to use this data builder script.
 
 ### for further developing the visualization application:
 
