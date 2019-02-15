@@ -22,9 +22,22 @@ const allLangsRootClusterGraphInfo = require('../../../data/all_langs_gram_root_
 })
 export class AppComponent implements AfterContentInit, OnInit {
   
+
+  /**
+   * div container for drawing graph
+   *
+   * @type {ElementRef}
+   * @memberof AppComponent
+   */
   @ViewChild('canvas') 
   canvas: ElementRef;
   
+  /**
+   * list elements of clusters selected by language
+   *
+   * @type {MatSelectionList}
+   * @memberof AppComponent
+   */
   @ViewChild('selectedClusters') 
   selectedClusters: MatSelectionList;
 
@@ -37,8 +50,21 @@ export class AppComponent implements AfterContentInit, OnInit {
   withGramRootData = [deRootClusterGraphInfo, enRootClusterGraphInfo, frRootClusterGraphInfo, 
     allLangsRootClusterGraphInfo
   ];
+
+  /**
+   * for storing all imported json data
+   *
+   * @type {*}
+   * @memberof AppComponent
+   */
   allData: any = {};
 
+  /**
+   * for storing nodes and edges info of showed graph
+   *
+   * @type {*}
+   * @memberof AppComponent
+   */
   data: any = {};
   
   groupLangsMap = {
@@ -53,7 +79,7 @@ export class AppComponent implements AfterContentInit, OnInit {
 
   clusterGraph: any[];
   clusterGraphFiltered: any[];
-  selectedLang = 'de';
+  selectedLang = this.groupLangsMap[1];
   minNodesReal = 1;
   maxNodesReal = 9999;
   minNodes = 20;
@@ -61,9 +87,7 @@ export class AppComponent implements AfterContentInit, OnInit {
   clusterFilterInput = ' ';
   nodeTextFilterInput = ' ';
 
-
   simulationStopped = false;
-  nodeColors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
   graphElems: {
     zoom: any;
     svg: any;
@@ -100,17 +124,32 @@ export class AppComponent implements AfterContentInit, OnInit {
     fadeOpacity: 0.1,
   };
 
+  /**
+   * create an instance of AppComponent
+   * 
+   * @memberof AppComponent
+   */
   constructor() {
     this.allData[this.gramRootRadioText[0]] = this.withoutGramRootData;
     this.allData[this.gramRootRadioText[1]] = this.withGramRootData;
   }
 
+  /**
+   * ng life cicle hook for init view elements
+   *
+   * @memberof AppComponent
+   */
   ngOnInit() {
     (<any> this.selectedClusters).selectedOptions._multiple = false;
   }
 
+  /**
+   * ng life cicle hook after content init
+   *
+   * @memberof AppComponent
+   */
   ngAfterContentInit() {
-    this.selectClusterLang('de', true);
+    this.selectClusterLang(this.groupLangsMap[1], true);
   }
 
   /**
@@ -142,7 +181,6 @@ export class AppComponent implements AfterContentInit, OnInit {
     this.showAllNodes();
   }
 
-  
   /**
    * get class name of circle before lammas or translation texts
    *
