@@ -9,7 +9,7 @@
 |   form -- inflected   |  7554 |         |
 | form -- multiWordUnit |  534  |         |
 |  form -- construction |   53  |         |
-| form -- mutliWordUnit |   1   |         |
+| form -- mutliWordUnit |   1   |maybe err|
 | gram -- pos           | 7019  |         |
 | gram -- root          | 7458  |         |
 | gram -- gender        | 65    |         |
@@ -71,9 +71,9 @@
 | de                    | 14051 |         |
 | en                    | 11587 |         |
 | fr                    | 9469  |         |
-| dfr                   | 1     |         |
-| er                    | 1     |         |
-| f                     | 1     |         |
+| dfr                   | 1     |maybe err|
+| er                    | 1     |maybe err|
+| f                     | 1     |maybe err|
 
 ### count of entries by translations:
 
