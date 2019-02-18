@@ -63,7 +63,9 @@ The TAGEF-Net application for visualization of the networks in the given diction
 
   # if you run it the first time or after modifying/regenerating JSON data
   npm run first-start
-
+  # on Windows there could be an error about vulnerable modules. You can use this command to override it temporarily.
+  npm audit fix --force
+  
   # for starting it again
   npm run start
 ```
