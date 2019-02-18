@@ -376,6 +376,7 @@ export class AppComponent implements AfterContentInit, OnInit {
     if (this.graphElems.svg) {
       this.graphElems.simulation.stop();
       this.graphElems.svg.remove();
+      this.graphSettings.zoomFactor = 1;
     }
   }
 
